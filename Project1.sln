@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project1", "Project1\Project1.vcxproj", "{CE9C2A68-CB9B-41CA-98E4-835468819989}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smart_snake", "Project1\Project1.vcxproj", "{CE9C2A68-CB9B-41CA-98E4-835468819989}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B6E26C42-29AF-444B-9EBA-1DD4F9E92F6C}
+		SolutionGuid = {AF2FB05B-75B3-4DB8-B23F-5259B460E3D2}
 	EndGlobalSection
 EndGlobal
