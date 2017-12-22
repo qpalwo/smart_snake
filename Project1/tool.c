@@ -1,4 +1,4 @@
-#include "my_h.h"
+ï»¿#include "my_h.h"
 
 void gotoxy(int x, int y) {
 	CONSOLE_CURSOR_INFO cursor_info = { 1,0 };
@@ -11,21 +11,42 @@ void gotoxy(int x, int y) {
 
 void printer_snake_body_1(int x, int y) {
 	gotoxy(x, y);
-	printf("¡ö");
+	printf("â– ");
 }
 
-//ÅĞ¶Ï³öÇ½ĞèÒª´ÓÁíÒ»²à·µ»Ø
-void judge_outu(int *x, int *y) {
-	if (*x == MAP_WIDTH) *x -= MAP_WIDTH;
-	else if (*x == -1) *x += MAP_WIDTH;
-	else if (*y == MAP_LENGTH) *y -= MAP_LENGTH;
-	else if (*y == -1) *y += MAP_LENGTH;
+void printer_base_food(int x, int y) {
+	gotoxy(x, y);
+	printf("â˜‰");
 }
+/*
+1 æ™®é€šè›‡èº«ä½“   2 åŸºç¡€é£Ÿç‰©
+*/
+void main_printer(int type, int x, int y) {
+	switch (type){
+	case 1:
+		printer_snake_body_1(x, y);
+		break;
+	case 2:
+		printer_base_food(x, y);
+		break;
+	default:
+		break;
+	}
+}
+
+//éšæœºæ•°ç”Ÿæˆ
+int random_num() {
+	srand(time(NULL));
+	srand(rand());
+	return rand();
+}
+
+
 
 /*
-x ²åÈëÉßÍ·µÄx
-y ²åÈëÉßÍ·µÄy
-h µÚ¼¸²ãµØÍ¼
+x æ’å…¥è›‡å¤´çš„x
+y æ’å…¥è›‡å¤´çš„y
+h ç¬¬å‡ å±‚åœ°å›¾
 */
 void insert_head(int x, int y, int h) {
 	snake *p1;
@@ -43,19 +64,21 @@ void insert_head(int x, int y, int h) {
 }
 
 /*
-num ÒªÉ¾³ıµÄÎ²°Í½ÚÊı
-h µÚ¼¸²ãµØÍ¼
+num è¦åˆ é™¤çš„å°¾å·´èŠ‚æ•°
+h ç¬¬å‡ å±‚åœ°å›¾
 */
 void delete_tail(int num, int h) {
 	snake *p1 = NULL, *p2 = NULL;
 	p1 = snake_tail;
-	for (int i = 0; i < num; i++) {
-		p2 = p1->previous;
-		map_data[h][p1->y][p1->x] = 0;
-		gotoxy(p1->x, p1->y);
-		printf("  ");
-		free(p1);
-		p1 = p2;
+	if (num != 0) {
+		for (int i = 0; i < num; i++) {
+			p2 = p1->previous;
+			map_data[h][p1->y][p1->x] = 0;
+			gotoxy(p1->x, p1->y);
+			printf("  ");
+			free(p1);
+			p1 = p2;
+		}
 	}
 	p1->next = NULL;
 	snake_tail = p1;
@@ -64,34 +87,39 @@ void delete_tail(int num, int h) {
 
 
 /*
-direct ³ÖĞø×ßµÄ·½Ïò
-h  µÚ¼¸²ãµØÍ¼
+direct æŒç»­èµ°çš„æ–¹å‘
+h  ç¬¬å‡ å±‚åœ°å›¾
 */
 void keep_move(int direct, int h) {
+	int d_s;  //  åˆ é™¤çš„èº«ä½“èŠ‚æ•°
 	switch (direct) {
 	case UP:
 	case W:
+		d_s = move_judger(snake_head->x, snake_head->y - 1, h);
 		insert_head(snake_head->x, snake_head->y - 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(1, 0);
+		delete_tail(d_s, 0);
 		break;
 	case LEFT:
 	case A:
+		d_s = move_judger(snake_head->x - 1, snake_head->y, h);
 		insert_head(snake_head->x - 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(1, 0);
+		delete_tail(d_s, 0);
 		break;
 	case DOWN:
 	case S:
+		d_s = move_judger(snake_head->x, snake_head->y + 1, h);
 		insert_head(snake_head->x, snake_head->y + 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(1, 0);
+		delete_tail(d_s, 0);
 		break;
 	case RIGHT:
 	case D:
+		d_s = move_judger(snake_head->x + 1, snake_head->y, h);
 		insert_head(snake_head->x + 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(1, 0);
+		delete_tail(d_s, 0);
 		break;
 	default:
 		break;
@@ -102,7 +130,7 @@ void keep_move(int direct, int h) {
 void move() {
 	do {
 		char direct = D;
-		direct = getch();
+		while(kbhit()) direct = getch();
 		if (direct == 224) {
 			direct == getch();
 			while (!kbhit()) {
