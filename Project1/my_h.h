@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include <malloc.h>
 #include <time.h>
+#include <conio.h>
 
 //速度选择
 #define SPEED_NORMAL 150
@@ -66,6 +67,9 @@ extern int food_order_data[MAP_HEIGHT][MAP_LENGTH][MAP_WIDTH];
 
 //记分板
 extern int score;
+
+//键盘检测缓存
+int key_temp[4];
 
 //函数作用域拓展
 void init_core(int h);

@@ -16,14 +16,32 @@ int move_judger(int x, int y, int h) {
 	case 0:
 		return 1;
 	case SNAKE:
-		break;
+		int count = 1;
+		snake *p1, *p2;
+		p1 = snake_tail;
+		while (1){
+			if (p1->y == y) {
+				if (p1->x == x) {
+					count++;
+					return count;
+				}
+				else {
+					p2 = p1->previous;
+					p1 = p2;
+					count++;
+				}
+			}
+			else {
+				p2 = p1->previous;
+				p1 = p2;
+				count++;
+			}
+		}
 	case BASE_FOOD:
 		score++;
 		food_order_data[h][y][x] = 0;
 		init_base_food(h);
 		return 0;
-	default:
-		break;
 	}
 }
 

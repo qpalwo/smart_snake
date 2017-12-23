@@ -10,4 +10,7 @@ int food_order_data[MAP_HEIGHT][MAP_LENGTH][MAP_WIDTH] = { 0 };
 int score = 0;
 
 //ËÙ¶È
-int speed;
+int speed = SPEED_NORMAL;
+
+//¼üÅÌ¼ì²â»º´æ
+int key_temp[4] = {0};

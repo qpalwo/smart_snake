@@ -1,5 +1,6 @@
 ﻿#include "my_h.h"
 
+//光标移动函数
 void gotoxy(int x, int y) {
 	CONSOLE_CURSOR_INFO cursor_info = { 1,0 };
 	COORD c;
@@ -9,20 +10,23 @@ void gotoxy(int x, int y) {
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
 }
 
+//打印基本蛇的身体
 void printer_snake_body_1(int x, int y) {
 	gotoxy(x, y);
 	printf("■");
 }
 
+//打印基本食物
 void printer_base_food(int x, int y) {
 	gotoxy(x, y);
 	printf("☉");
 }
-/*
+
+/*  输出函数，type 即输出的类型
 1 普通蛇身体   2 基础食物
 */
 void main_printer(int type, int x, int y) {
-	switch (type){
+	switch (type) {
 	case 1:
 		printer_snake_body_1(x, y);
 		break;
@@ -36,14 +40,14 @@ void main_printer(int type, int x, int y) {
 
 //随机数生成
 int random_num() {
-	srand(time(NULL));
+	srand((unsigned)time(NULL));
 	srand(rand());
 	return rand();
 }
 
 
 
-/*
+/*蛇头插入函数
 x 插入蛇头的x
 y 插入蛇头的y
 h 第几层地图
@@ -63,7 +67,7 @@ void insert_head(int x, int y, int h) {
 	snake_head = p1;
 }
 
-/*
+/* 尾巴删除函数
 num 要删除的尾巴节数
 h 第几层地图
 */
@@ -84,6 +88,135 @@ void delete_tail(int num, int h) {
 	snake_tail = p1;
 }
 
+//键盘缓存数组复位函数
+void init_key_temp() {
+	for (int i = 0; i < 2; i++) {
+		key_temp[i] = key_temp[i + 2];
+		key_temp[i + 2] = 0;
+	}
+}
+
+/*
+键盘输入状态缓存判断
+*/
+char key_input_detec() {
+	//键盘输入内容输入缓存数组
+	key_temp[2] = _getch();
+	if (key_temp[2] == 224) key_temp[3] = _getch();
+
+	//当使用功能键时的检测（包含回头和加速）
+	if (key_temp[0] == 224 && key_temp[2] == 224) {
+		if (key_temp[1] == LEFT) {
+			if (key_temp[3] == RIGHT) {
+				speed += 10;
+				return LEFT;
+			}
+			else if (key_temp[3] == LEFT) {
+				speed -= 20;
+				init_key_temp();
+				return LEFT;
+			}
+			else {
+				init_key_temp();
+				return key_temp[1];
+			}
+		}
+		else if (key_temp[1] == RIGHT) {
+			if (key_temp[3] == LEFT) {
+				speed += 10;
+				return RIGHT;
+			}
+			else if (key_temp[3] == RIGHT) {
+				speed -= 20;
+				init_key_temp();
+				return RIGHT;
+			}
+			else {
+				init_key_temp();
+				return key_temp[1];
+			}
+		}
+		else if (key_temp[1] == UP) {
+			if (key_temp[3] == DOWN) {
+				init_key_temp();
+				return UP;
+			}
+			else if (key_temp[3] == UP) {
+				speed -= 20;
+				init_key_temp();
+				return UP;
+			}
+			else {
+				init_key_temp();
+				return key_temp[1];
+			}
+		}
+		else if (key_temp[1] == DOWN) {
+			if (key_temp[3] == UP) {
+				speed += 10;
+				return DOWN;
+			}
+			else if (key_temp[3] == DOWN) {
+				speed -= 20;
+				init_key_temp();
+				return DOWN;
+			}
+			else {
+				init_key_temp();
+				return key_temp[1];
+			}
+		}
+	}
+	//使用非功能键时的加速检测
+	/*else if (key_temp[0] != 224 && key_temp[2] != 224) {
+		speed -= 20;
+		init_key_temp();
+		return key_temp[0];
+	}*/   //  此功能严重不正常，先屏蔽
+	//使用非功能键时的回头检测
+	else if (key_temp[2] == A) {
+		if (key_temp[0] == D) {
+			return D;
+		}
+		else {
+			init_key_temp();
+			return key_temp[0];
+		}
+	}
+	else if (key_temp[2] == D) {
+		if (key_temp[0] == A) {
+			return A;
+		}
+		else {
+			init_key_temp();
+			return key_temp[0];
+		}
+	}
+	else if (key_temp[2] == W) {
+		if (key_temp[0] == S) {
+			return S;
+		}
+		else {
+			init_key_temp();
+			return key_temp[0];
+		}
+	}
+	else if (key_temp[2] == S) {
+		if (key_temp[0] == W) {
+			return W;
+		}
+		else {
+			init_key_temp();
+			return key_temp[0];
+		}
+	}
+	//功能键与WASD同时使用的情况……   emmmm，此处忽略
+	//只做了由wasd换到上下左右的衔接，其它都没实现
+	else if (key_temp[0] != 224 && key_temp[2] == 224) {
+		init_key_temp();
+		return key_temp[1];
+	}
+}
 
 
 /*
@@ -126,27 +259,24 @@ void keep_move(int direct, int h) {
 	}
 }
 
+/*  蛇能移动的基础
+h  地图层数
 
-void move() {
-	do {
-		char direct = D;
-		while(kbhit()) direct = getch();
-		if (direct == 224) {
-			direct == getch();
-			while (!kbhit()) {
-				keep_move(direct, 0);
-				Sleep(SPEED_NORMAL);
-			}
+*/
+void move(int h) {
+	char direct = RIGHT;
+	key_temp[0] = 224;
+	key_temp[1] = RIGHT;
+	//char direct = D;
+	//key_temp[0] = D;
+	while (1) {
+		if (_kbhit()) direct = key_input_detec();
+		while (!_kbhit()) {
+			keep_move(direct, h);
+			if (speed <= 90) speed == 90;
+			Sleep(speed);
 		}
-		else {
-			while (!kbhit()) {
-				keep_move(direct, 0);
-				Sleep(SPEED_NORMAL);
-			}
-		}
-	} while (kbhit());
-
-
+	}
 
 }
 
