@@ -22,16 +22,34 @@ void printer_base_food(int x, int y) {
 	printf("☉");
 }
 
+//打印地雷
+void printer_lamd_mine(int x, int y) {
+	gotoxy(x, y);
+	printf("⊕");
+}
+
+//打印毒草
+void printer_poison_weed(int x, int y) {
+	gotoxy(x, y);
+	printf("※");
+}
+
 /*  输出函数，type 即输出的类型
 1 普通蛇身体   2 基础食物
 */
 void main_printer(int type, int x, int y) {
 	switch (type) {
-	case 1:
+	case SNAKE:
 		printer_snake_body_1(x, y);
 		break;
-	case 2:
+	case BASE_FOOD:
 		printer_base_food(x, y);
+		break;
+	case LAND_MINE:
+		printer_lamd_mine(x, y);
+		break;
+	case POISON_WEED:
+		printer_poison_weed(x, y);
 		break;
 	default:
 		break;
@@ -45,7 +63,18 @@ int random_num() {
 	return rand();
 }
 
-
+//自动生成item
+void aoto_make_item(int h) {
+	int key = random_num() % 30;
+	switch (key){
+	case 30:
+		item_choose(LAND_MINE, h);
+	case 15:
+		item_choose(POISON_WEED, h);
+	default:
+		break;
+	}
+}
 
 /*蛇头插入函数
 x 插入蛇头的x
@@ -267,12 +296,11 @@ void move(int h) {
 	char direct = RIGHT;
 	key_temp[0] = 224;
 	key_temp[1] = RIGHT;
-	//char direct = D;
-	//key_temp[0] = D;
 	while (1) {
 		if (_kbhit()) direct = key_input_detec();
 		while (!_kbhit()) {
 			keep_move(direct, h);
+			aoto_make_item(h);
 			if (speed <= 90) speed == 90;
 			Sleep(speed);
 		}

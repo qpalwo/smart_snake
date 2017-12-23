@@ -34,32 +34,18 @@ void init_map(int floor) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			switch (map_data[0][i][j]) {
 			case SNAKE:
-				main_printer(1, j, i);
+				main_printer(SNAKE, j, i);
 				break;
 			case 0:
 				gotoxy(j, i);
 				printf("  ");
 				break;
 			case BASE_FOOD:
-				main_printer(2, j, i);
+				main_printer(BASE_FOOD, j, i);
 			default:
 				break;
 			}
 		}
-}
-
-//h  地图层数
-void init_base_food(int h) {
-	int food_x, food_y;
-
-	do {
-		food_x = random_num() % MAP_WIDTH;
-		food_y = random_num() % MAP_LENGTH;
-	} while (base_food_judger(food_x, food_y, h));
-
-	food_order_data[h][food_y][food_x] = 1;
-	map_data[h][food_y][food_x] = BASE_FOOD;
-	main_printer(2, food_x, food_y);
 }
 
 //  h   地图层数
@@ -67,5 +53,6 @@ void init_core(int h) {
 	init_snake();
 	init_sna_tomap(h);
 	init_map(h);
-	init_base_food(h);
+	item_choose(BASE_FOOD, h);
+	//item_choose(POISON_WEED, h);
 }

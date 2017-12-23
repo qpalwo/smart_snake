@@ -40,6 +40,8 @@
 //地图内容
 #define SNAKE 1001
 #define BASE_FOOD 1002
+#define LAND_MINE 1003
+#define POISON_WEED 1004
 
 
 //蛇的结构体
@@ -75,10 +77,10 @@ int key_temp[4];
 void init_core(int h);
 void main_printer(int type, int x, int y);
 void gotoxy(int x, int y);
-void move();
+void move(int h);
 int random_num();
-int base_food_judger(int x, int y, int h);
-void init_base_food(int h);
+int base_item_judger(int x, int y, int h);
+void item_choose(int choose, int h);
 int move_judger(int x, int y, int h);
 
 //全局速度

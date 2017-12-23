@@ -2,7 +2,7 @@
 /* 判断基础食物是否可以生成
 h  地图层数
 */
-int base_food_judger(int x, int y, int h) {
+int base_item_judger(int x, int y, int h) {
 	if (map_data[h][y][x] == 0) return 0;
 	else return 1;
 }
@@ -17,12 +17,11 @@ int move_judger(int x, int y, int h) {
 		return 1;
 	case SNAKE:
 		int count = 1;
-		snake *p1, *p2;
-		p1 = snake_tail;
+		snake *p1 = snake_tail, *p2 = NULL;
 		while (1){
 			if (p1->y == y) {
 				if (p1->x == x) {
-					count++;
+					count += 3;
 					return count;
 				}
 				else {
@@ -40,23 +39,23 @@ int move_judger(int x, int y, int h) {
 	case BASE_FOOD:
 		score++;
 		food_order_data[h][y][x] = 0;
-		init_base_food(h);
+		item_choose(BASE_FOOD, h);
 		return 0;
+	case LAND_MINE:
+		score /= 2;
+		int snake_length = 4;
+		p1 = snake_head;
+		p2 = NULL;
+		while (p1->next != NULL) {
+			snake_length++;
+			p2 = p1->next;
+			p1 = p2;
+		}
+		return (snake_length / 2);
+	case POISON_WEED:
+		return 2;
 	}
 }
-
-
-////判断操作是否可以进行
-//int judge(int x, int y, int type) {
-//	switch (type) {
-//	case SNAKE:
-//		break;
-//	case BASE_FOOD:
-//		break;
-//	default:
-//		break;
-//	}
-//}
 
 //判断出墙需要从另一侧返回
 void judge_outu(int *x, int *y) {
