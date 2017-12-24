@@ -113,10 +113,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="data.c" />
+    <ClCompile Include="file.c" />
     <ClCompile Include="item.c" />
     <ClCompile Include="init.c" />
     <ClCompile Include="judge.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="temp.c" />
     <ClCompile Include="tool.c" />
   </ItemGroup>
   <ItemGroup>

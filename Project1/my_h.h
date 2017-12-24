@@ -8,6 +8,7 @@
 #include <malloc.h>
 #include <time.h>
 #include <conio.h>
+#include <math.h>
 
 //速度选择
 #define SPEED_NORMAL 150
@@ -64,9 +65,6 @@ snake *snake_tail;
 //地图
 extern int map_data[MAP_HEIGHT][MAP_LENGTH][MAP_WIDTH];
 
-//食物优先级
-extern int food_order_data[MAP_HEIGHT][MAP_LENGTH][MAP_WIDTH];
-
 //记分板
 extern int score;
 
@@ -78,7 +76,6 @@ void init_core(int h);
 void main_printer(int type, int x, int y);
 void gotoxy(int x, int y);
 void move(int h);
-int random_num();
 int base_item_judger(int x, int y, int h);
 void item_choose(int choose, int h);
 int move_judger(int x, int y, int h);

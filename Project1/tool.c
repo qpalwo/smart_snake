@@ -16,23 +16,6 @@ void printer_snake_body_1(int x, int y) {
 	printf("■");
 }
 
-//打印基本食物
-void printer_base_food(int x, int y) {
-	gotoxy(x, y);
-	printf("☉");
-}
-
-//打印地雷
-void printer_lamd_mine(int x, int y) {
-	gotoxy(x, y);
-	printf("⊕");
-}
-
-//打印毒草
-void printer_poison_weed(int x, int y) {
-	gotoxy(x, y);
-	printf("※");
-}
 
 /*  输出函数，type 即输出的类型
 1 普通蛇身体   2 基础食物
@@ -40,37 +23,36 @@ void printer_poison_weed(int x, int y) {
 void main_printer(int type, int x, int y) {
 	switch (type) {
 	case SNAKE:
-		printer_snake_body_1(x, y);
+		gotoxy(x, y);
+		printf("■");
 		break;
 	case BASE_FOOD:
-		printer_base_food(x, y);
+		gotoxy(x, y);
+		printf("☉");
 		break;
 	case LAND_MINE:
-		printer_lamd_mine(x, y);
+		gotoxy(x, y);
+		printf("⊕");
 		break;
 	case POISON_WEED:
-		printer_poison_weed(x, y);
+		gotoxy(x, y);
+		printf("※");
 		break;
 	default:
 		break;
 	}
 }
 
-//随机数生成
-int random_num() {
-	srand((unsigned)time(NULL));
-	srand(rand());
-	return rand();
-}
-
 //自动生成item
-void aoto_make_item(int h) {
-	int key = random_num() % 30;
+void auto_make_item(int h) {
+	int key = rand() % 300;
 	switch (key){
-	case 30:
+	case 201:
 		item_choose(LAND_MINE, h);
-	case 15:
+		break;
+	case 78:
 		item_choose(POISON_WEED, h);
+		break;
 	default:
 		break;
 	}
@@ -105,6 +87,7 @@ void delete_tail(int num, int h) {
 	p1 = snake_tail;
 	if (num != 0) {
 		for (int i = 0; i < num; i++) {
+			if (p1 == NULL) p1 = snake_tail;
 			p2 = p1->previous;
 			map_data[h][p1->y][p1->x] = 0;
 			gotoxy(p1->x, p1->y);
@@ -132,30 +115,29 @@ char key_input_detec() {
 	//键盘输入内容输入缓存数组
 	key_temp[2] = _getch();
 	if (key_temp[2] == 224) key_temp[3] = _getch();
-
 	//当使用功能键时的检测（包含回头和加速）
 	if (key_temp[0] == 224 && key_temp[2] == 224) {
-		if (key_temp[1] == LEFT) {
-			if (key_temp[3] == RIGHT) {
-				speed += 10;
-				return LEFT;
-			}
-			else if (key_temp[3] == LEFT) {
-				speed -= 20;
-				init_key_temp();
-				return LEFT;
-			}
-			else {
-				init_key_temp();
-				return key_temp[1];
-			}
-		}
-		else if (key_temp[1] == RIGHT) {
-			if (key_temp[3] == LEFT) {
+		if (key_temp[3] == LEFT) {
+			if (key_temp[1] == RIGHT) {
 				speed += 10;
 				return RIGHT;
 			}
-			else if (key_temp[3] == RIGHT) {
+			else if (key_temp[1] == LEFT) {
+				speed -= 20;
+				init_key_temp();
+				return LEFT;
+			}
+			else {
+				init_key_temp();
+				return key_temp[1];
+			}
+		}
+		else if (key_temp[3] == RIGHT) {
+			if (key_temp[1] == LEFT) {
+				speed += 10;
+				return LEFT;
+			}
+			else if (key_temp[1] == RIGHT) {
 				speed -= 20;
 				init_key_temp();
 				return RIGHT;
@@ -165,27 +147,27 @@ char key_input_detec() {
 				return key_temp[1];
 			}
 		}
-		else if (key_temp[1] == UP) {
-			if (key_temp[3] == DOWN) {
+		else if (key_temp[3] == UP) {
+			if (key_temp[1] == DOWN) {
 				init_key_temp();
-				return UP;
-			}
-			else if (key_temp[3] == UP) {
-				speed -= 20;
-				init_key_temp();
-				return UP;
-			}
-			else {
-				init_key_temp();
-				return key_temp[1];
-			}
-		}
-		else if (key_temp[1] == DOWN) {
-			if (key_temp[3] == UP) {
-				speed += 10;
 				return DOWN;
 			}
-			else if (key_temp[3] == DOWN) {
+			else if (key_temp[1] == UP) {
+				speed -= 20;
+				init_key_temp();
+				return UP;
+			}
+			else {
+				init_key_temp();
+				return key_temp[1];
+			}
+		}
+		else if (key_temp[3] == DOWN) {
+			if (key_temp[1] == UP) {
+				speed += 10;
+				return UP;
+			}
+			else if (key_temp[1] == DOWN) {
 				speed -= 20;
 				init_key_temp();
 				return DOWN;
@@ -300,7 +282,7 @@ void move(int h) {
 		if (_kbhit()) direct = key_input_detec();
 		while (!_kbhit()) {
 			keep_move(direct, h);
-			aoto_make_item(h);
+			auto_make_item(h);
 			if (speed <= 90) speed == 90;
 			Sleep(speed);
 		}

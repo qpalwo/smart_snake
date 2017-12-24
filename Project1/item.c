@@ -8,19 +8,19 @@ void make_base_item(int h, int choose) {
 	int item_x, item_y;
 
 	do {
-		item_x = random_num() % MAP_WIDTH;
-		item_y = random_num() % MAP_LENGTH;
+		item_x = rand() % MAP_WIDTH;
+		item_y = rand() % MAP_LENGTH;
 	} while (base_item_judger(item_x, item_y, h));
 
 	switch (choose){
 	case BASE_FOOD:
-		food_order_data[h][item_y][item_x] = 1;
 		map_data[h][item_y][item_x] = BASE_FOOD;
 		main_printer(BASE_FOOD, item_x, item_y);
 		break;
 	case LAND_MINE:
 		map_data[h][item_y][item_x] = LAND_MINE;
 		main_printer(LAND_MINE, item_x, item_y);
+		break;
 	case POISON_WEED:
 		map_data[h][item_y][item_x] = POISON_WEED;
 		main_printer(POISON_WEED, item_x, item_y);
