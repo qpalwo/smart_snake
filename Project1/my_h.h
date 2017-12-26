@@ -9,6 +9,7 @@
 #include <time.h>
 #include <conio.h>
 #include <math.h>
+#include <assert.h>
 
 //速度选择
 #define SPEED_NORMAL 150
@@ -18,7 +19,7 @@
 //地图大小
 #define MAP_WIDTH 40     //x
 #define MAP_LENGTH 30    //y
-#define MAP_HEIGHT 1  
+#define MAP_HEIGHT 2  
 
 //init snake head location
 #define INIT_SNAKE_HEADX 10
@@ -43,6 +44,10 @@
 #define BASE_FOOD 1002
 #define LAND_MINE 1003
 #define POISON_WEED 1004
+#define WALL 1005
+#define NEW_GAME 1006
+#define FLOOR_ONE 1007
+#define MENU 1008
 
 
 //蛇的结构体
@@ -79,6 +84,8 @@ void move(int h);
 int base_item_judger(int x, int y, int h);
 void item_choose(int choose, int h);
 int move_judger(int x, int y, int h);
+void aoto_make_wall(int h, int leval);
+void jump_to(int floor);
 
 //全局速度
 extern int speed;

@@ -17,8 +17,8 @@ void printer_snake_body_1(int x, int y) {
 }
 
 
-/*  输出函数，type 即输出的类型
-1 普通蛇身体   2 基础食物
+/*  
+输出函数，type 即输出的类型
 */
 void main_printer(int type, int x, int y) {
 	switch (type) {
@@ -38,6 +38,10 @@ void main_printer(int type, int x, int y) {
 		gotoxy(x, y);
 		printf("※");
 		break;
+	case WALL:
+		gotoxy(x, y);
+		printf("◆");
+		break;
 	default:
 		break;
 	}
@@ -45,16 +49,72 @@ void main_printer(int type, int x, int y) {
 
 //自动生成item
 void auto_make_item(int h) {
-	int key = rand() % 300;
-	switch (key){
-	case 201:
-		item_choose(LAND_MINE, h);
-		break;
-	case 78:
-		item_choose(POISON_WEED, h);
-		break;
-	default:
-		break;
+	if (h != 0) {
+		int key = rand() % 300;
+		switch (key) {
+		case 201:
+			item_choose(LAND_MINE, h);
+			break;
+		case 78:
+			item_choose(POISON_WEED, h);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+/*随机地图生成
+leval 复杂程度
+*/
+void aoto_make_wall(int h, int leval) {
+	int count = 0;
+	int sum = ((MAP_WIDTH * MAP_LENGTH) / 20) * leval;   //生成墙的总数
+	int choose = 0;
+	while (count <= sum)
+	{
+		choose = rand() % 4 + 1;
+		for (int i = 0; i < leval; i++) {
+			if (choose == 1) {                //生成障碍物为横向
+				int temp = (rand() % (leval * 2 + 4));  //生成的单个障碍物的长度
+				int x = rand() % MAP_WIDTH;
+				int y = rand() % MAP_LENGTH;
+				for (int j = 0; j < temp; j++) {
+					if (x + j <= MAP_WIDTH) {
+						map_data[h][y][x + j] == WALL;
+						//main_printer(WALL, x + j, y);
+						count++;
+					}
+					else break;
+				}
+			}
+			else if (choose == 2) {           //生成障碍物为纵向
+				int temp = (rand() % (leval * 2 + 4));  //生成的单个障碍物的长度
+				int x = rand() % MAP_WIDTH;
+				int y = rand() % MAP_LENGTH;
+				for (int j = 0; j < temp; j++) {
+					if (y + j <= MAP_LENGTH) {
+						map_data[h][y + j][x] = WALL;
+						//main_printer(WALL, x, y + j);
+						count++;
+					}
+					else break;
+				}
+			}
+			else if (choose == 3) {           //生成障碍物为斜右上
+				int temp = (rand() % (leval * 2 + 4));  //生成的单个障碍物的长度
+				int x = rand() % MAP_WIDTH;
+				int y = rand() % MAP_LENGTH;
+				for (int j = 0; j < temp; j++) {
+					if (y + j <= MAP_LENGTH && x + j <= MAP_WIDTH) {
+						map_data[h][y + j][x + j] = WALL;
+						//main_printer(WALL, x + j, y + j);
+						count++;
+					}
+					else break;
+				}
+			}
+		}
 	}
 }
 
@@ -86,7 +146,7 @@ void delete_tail(int num, int h) {
 	snake *p1 = NULL, *p2 = NULL;
 	p1 = snake_tail;
 	if (num != 0) {
-		for (int i = 0; i < num; i++) {
+		for (int i = 0; i < num; i++) { 
 			if (p1 == NULL) p1 = snake_tail;
 			p2 = p1->previous;
 			map_data[h][p1->y][p1->x] = 0;
@@ -98,6 +158,7 @@ void delete_tail(int num, int h) {
 	}
 	p1->next = NULL;
 	snake_tail = p1;
+	assert(snake_tail);
 }
 
 //键盘缓存数组复位函数
@@ -149,7 +210,7 @@ char key_input_detec() {
 		}
 		else if (key_temp[3] == UP) {
 			if (key_temp[1] == DOWN) {
-				init_key_temp();
+				speed += 10;
 				return DOWN;
 			}
 			else if (key_temp[1] == UP) {
@@ -242,28 +303,28 @@ void keep_move(int direct, int h) {
 		d_s = move_judger(snake_head->x, snake_head->y - 1, h);
 		insert_head(snake_head->x, snake_head->y - 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, 0);
+		delete_tail(d_s, h);
 		break;
 	case LEFT:
 	case A:
 		d_s = move_judger(snake_head->x - 1, snake_head->y, h);
 		insert_head(snake_head->x - 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, 0);
+		delete_tail(d_s, h);
 		break;
 	case DOWN:
 	case S:
 		d_s = move_judger(snake_head->x, snake_head->y + 1, h);
 		insert_head(snake_head->x, snake_head->y + 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, 0);
+		delete_tail(d_s, h);
 		break;
 	case RIGHT:
 	case D:
 		d_s = move_judger(snake_head->x + 1, snake_head->y, h);
 		insert_head(snake_head->x + 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, 0);
+		delete_tail(d_s, h);
 		break;
 	default:
 		break;
@@ -283,7 +344,7 @@ void move(int h) {
 		while (!_kbhit()) {
 			keep_move(direct, h);
 			auto_make_item(h);
-			if (speed <= 90) speed == 90;
+			if (speed <= 90) speed = 90;
 			Sleep(speed);
 		}
 	}

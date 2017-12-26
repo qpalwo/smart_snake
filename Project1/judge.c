@@ -20,8 +20,8 @@ int move_judger(int x, int y, int h) {
 			int count = 1;
 			snake *p1, *p2 = NULL;
 			p1 = snake_tail;
+			assert(p1);
 			while (1) {
-				if (p1 == NULL) p1 = snake_tail;
 				if (p1->y == y) {
 					if (p1->x == x) {
 						count += 3;
@@ -57,6 +57,15 @@ int move_judger(int x, int y, int h) {
 		case POISON_WEED:
 			speed -= 5;
 			return 2;
+		case WALL:
+			gotoxy(20, 15);
+			printf("你，你输了！！！");
+			Sleep(3000);
+			jump_to(MENU);
+			break;
+		case NEW_GAME:
+			jump_to(FLOOR_ONE);
+			break;
 		}
 	}
 	else return 1;
@@ -70,8 +79,13 @@ void judge_outu(int *x, int *y) {
 	else if (*y == -1) *y += MAP_LENGTH;
 }
 
+
+//以下部分为自动寻路智慧草的算法
+
+
+
 int food_x = 0; food_y = 0;
-snake *virtual_h = NULL; *virtual_t = NULL;
+snake *virtual_h = NULL, *virtual_t = NULL;
 snake v_h;
 
 //生成虚拟蛇
@@ -107,6 +121,7 @@ int find_food(int h) {
 				food_y = j;
 				return 1;
 			}
+			else return 0;
 		}
 	}
 }
@@ -118,6 +133,7 @@ int cacl_h(int h, int x, int y) {
 		sum = abs(x - food_x) + abs(y - food_y);
 		return sum;
 	}
+	else return -1;
 }
 
 
