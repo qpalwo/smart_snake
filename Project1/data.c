@@ -1,7 +1,14 @@
 #include "my_h.h"
 
 //地图数组
-int map_data[MAP_HEIGHT][MAP_LENGTH][MAP_WIDTH] = { 0 };
+int map_data[MAP_HEIGHT + 20][MAP_LENGTH+ 20][MAP_WIDTH + 20] = { 0 };
+
+//状态栏
+int statebar_data[MAP_LENGTH + 10][STATEBAR_WIDTH + 10] = { 0 };
+
+//当前所处层数
+int now_state = 0;
+
 
 //计分
 int score = 0;

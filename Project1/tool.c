@@ -1,4 +1,9 @@
 ﻿#include "my_h.h"
+void SetColor(unsigned short ForeColor, unsigned short BackGroundColor)
+{
+	HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hCon, (ForeColor % 16) | (BackGroundColor % 16 * 16));
+}
 
 //光标移动函数
 void gotoxy(int x, int y) {
@@ -13,9 +18,21 @@ void gotoxy(int x, int y) {
 //打印基本蛇的身体
 void printer_snake_body_1(int x, int y) {
 	gotoxy(x, y);
+	SetColor(rand()% 50, rand() % 50);
 	printf("■");
+	SetColor(7, 0);
 }
 
+//测量蛇身长度
+int length_of_snake() {
+	snake *p1 = snake_head;
+	int count = 1;
+	while (p1->next != NULL){
+		count++;
+		p1 = p1->next;
+	}
+	return count;
+}
 
 /*  
 输出函数，type 即输出的类型
@@ -23,8 +40,7 @@ void printer_snake_body_1(int x, int y) {
 void main_printer(int type, int x, int y) {
 	switch (type) {
 	case SNAKE:
-		gotoxy(x, y);
-		printf("■");
+		printer_snake_body_1(x, y);
 		break;
 	case BASE_FOOD:
 		gotoxy(x, y);
@@ -41,6 +57,11 @@ void main_printer(int type, int x, int y) {
 	case WALL:
 		gotoxy(x, y);
 		printf("◆");
+		break;
+	case 461:
+		gotoxy(x, y);
+		SetColor(100, 461);
+		printf("88");
 		break;
 	default:
 		break;
@@ -172,7 +193,7 @@ void init_key_temp() {
 /*
 键盘输入状态缓存判断
 */
-char key_input_detec() {
+char key_input_detec(int h) {
 	//键盘输入内容输入缓存数组
 	key_temp[2] = _getch();
 	if (key_temp[2] == 224) key_temp[3] = _getch();
@@ -288,6 +309,54 @@ char key_input_detec() {
 		init_key_temp();
 		return key_temp[1];
 	}
+	//测试自动寻路
+	else if (key_temp[2] == 102) {
+		int path[100][2] = {0};
+		search_main(h, path);
+		for (int i = 0; i < 100; i++)
+			printf("%d   %d  \t", path[i][0], path[i][1]);
+		system("pause");
+	}
+	else if (key_temp[2] == 8) {
+		system("cls");
+		gotoxy(20, 20);
+		printf("1. 保存 2. 返回游戏");
+		int choose = 0;
+		scanf_s("%d", &choose);
+		switch (choose) {
+		case 1:
+			map_data_save();
+			jump_to(MENU);
+			break;
+		case 2:
+			init_map(now_state);
+			break;
+		}
+	}
+	//P 118
+}
+
+//任意门
+int* any_door(int x, int y, int h ) {
+	int kb = _getch();
+	if (kb == 224) kb = _getch();
+	switch (kb){
+	case UP:
+	case W:
+		
+		break;
+	case DOWN:
+	case S:
+		break;
+	case LEFT:
+	case A:
+		break;
+	case RIGHT:
+	case D:
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -301,30 +370,38 @@ void keep_move(int direct, int h) {
 	case UP:
 	case W:
 		d_s = move_judger(snake_head->x, snake_head->y - 1, h);
+		fresh_score();
 		insert_head(snake_head->x, snake_head->y - 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, h);
+		if(d_s < length_of_snake())
+			delete_tail(d_s, h);
 		break;
 	case LEFT:
 	case A:
 		d_s = move_judger(snake_head->x - 1, snake_head->y, h);
+		fresh_score();
 		insert_head(snake_head->x - 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, h);
+		if (d_s < length_of_snake())
+			delete_tail(d_s, h);
 		break;
 	case DOWN:
 	case S:
 		d_s = move_judger(snake_head->x, snake_head->y + 1, h);
+		fresh_score();
 		insert_head(snake_head->x, snake_head->y + 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, h);
+		if (d_s < length_of_snake())
+			delete_tail(d_s, h);
 		break;
 	case RIGHT:
 	case D:
 		d_s = move_judger(snake_head->x + 1, snake_head->y, h);
+		fresh_score();
 		insert_head(snake_head->x + 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(d_s, h);
+		if (d_s < length_of_snake())
+			delete_tail(d_s, h);
 		break;
 	default:
 		break;
@@ -340,7 +417,7 @@ void move(int h) {
 	key_temp[0] = 224;
 	key_temp[1] = RIGHT;
 	while (1) {
-		if (_kbhit()) direct = key_input_detec();
+		if (_kbhit()) direct = key_input_detec(h);
 		while (!_kbhit()) {
 			keep_move(direct, h);
 			auto_make_item(h);
