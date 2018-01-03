@@ -47,8 +47,16 @@
 #define POISON_WEED 1004
 #define WALL 1005
 #define NEW_GAME 1006
-#define FLOOR_ONE 1007
+#define CONTINUE_PLAY 1007
 #define MENU 1008
+#define FLOOR_ONE 1009
+#define FLOOR_TWO 1010
+#define FLOOR_THREE 1011
+#define FLOOR_FOUR 1012
+#define FLOOR_FIVE 1013
+#define USER_CHOOSE 1014
+#define RANKING_LIST 1015
+
 
 
 //蛇的结构体
@@ -99,6 +107,7 @@ void user_info_save(int mode);
 int map_data_save();
 int map_data_read();
 void init_map(int floor);
+//int user_info_read(user *p_temp);
 
 //全局速度
 extern int speed;
@@ -126,6 +135,6 @@ typedef struct user_information {
 	struct user_information *next;
 }user;
 
-user *user1;
+extern user *user1;
 
 #endif // MY_H_H_INCLUDED

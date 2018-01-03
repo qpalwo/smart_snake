@@ -18,3 +18,5 @@ int speed = SPEED_NORMAL;
 
 //¼üÅÌ¼ì²â»º´æ
 int key_temp[4] = {0};
+
+user *user1 = NULL;

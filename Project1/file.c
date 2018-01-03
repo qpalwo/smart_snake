@@ -19,11 +19,12 @@ void user_info_save(int mode) {
 }
 
 //用户信息读取
-void user_info_read() {
-	if (fp = fopen_s(&fp, "user_info.xst", "r")) {
+user* user_info_read() {
+	user *p_temp;
+	if (!fopen_s(&fp, "user_info.xst", "r")) {
 		user *p1 = NULL;
 		p1 = (user*)malloc(sizeof(user));
-		user1 = p1;
+		p_temp = p1;
 		fread(p1, sizeof(user), 1, fp);
 		p1->next = NULL;
 		while (!feof(fp)){
@@ -34,9 +35,9 @@ void user_info_read() {
 			p1 = p2;
 		}
 		fclose(fp);
-		return 0;
+		return p_temp;
 	}
-	else return 1;
+	else return NULL;
 }
 
 //地图保存(游戏进度保存)
@@ -62,23 +63,29 @@ int map_data_read() {
 		int i = fread(map_data, sizeof(map_data), 1, fp);
 		fscanf_s(fp, "%d", &now_state);
 		fclose(fp);
-		fp = fopen_s(&fp, "temp_snake_data.xst", "r");
+		fopen_s(&fp, "temp_snake_data.xst", "r");
 		int length_of_snake = 0;
 		fscanf_s(fp, "%d ", &length_of_snake);
 		snake *p1 = (snake*)malloc(SIZEOF_SNAKE);
+		while (snake_head) {
+			snake *p3 = snake_head;
+			snake_head = snake_head->next;
+			free(p3);
+		}
 		snake_head = p1;
 		snake *p2 = NULL;
 		p1->previous = NULL;
 		for (int i = 0; i < length_of_snake; i++) {
-			fread(p1, sizeof(snake), 1, fp);
+			p2 = (snake*)malloc(sizeof(snake));
 			fscanf_s(fp, " %d %d ", &p1->x, &p1->y);
-			p2 = (snake*)malloc(sizeof(SIZEOF_SNAKE));
 			p1->next = p2;
 			p2->previous = p1;
 			p1 = p2;
+			
 		}
-		p2->next = NULL;
-		snake_tail = p2;
+		p2->previous->next = NULL;
+		snake_tail = p2->previous;
+		free(p2);
 		fclose(fp);
 		return i;
 	}

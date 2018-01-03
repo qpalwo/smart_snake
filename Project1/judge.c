@@ -7,6 +7,34 @@ int base_item_judger(int x, int y, int h) {
 	else return 1;
 }
 
+//继续游戏
+
+void continue_game() {
+	if (user1 == NULL) {
+
+	}
+	else {
+		map_data_read();
+		init_map(now_state);
+		move(now_state);
+	}
+}
+
+
+//关卡跳转
+void mission_jump() {
+	if (length_of_snake() >= now_state * 5) {
+		system("cls");
+		gotoxy(MAP_WIDTH / 2, MAP_LENGTH / 2);
+		SetColor(1, 5);
+		printf("恭喜过关！！！");
+		SetColor(7, 0);
+		Sleep(2000);
+		jump_to(now_state + 1009);  //跳转到下一关；
+	}
+}
+
+void init_ranking_list();
 /*判断蛇前方是什么
    h   地图层数
 
@@ -40,10 +68,11 @@ int move_judger(int x, int y, int h) {
 			}
 		case BASE_FOOD:
 			score++;
+			mission_jump();
 			item_choose(BASE_FOOD, h);
 			return 0;
 		case LAND_MINE:
-			score /= 2;
+			//score /= 2;
 			return (length_of_snake() / 2 + 2);
 		case POISON_WEED:
 			speed -= 5;
@@ -58,6 +87,12 @@ int move_judger(int x, int y, int h) {
 		case NEW_GAME:
 			init_new_user();
 			jump_to(FLOOR_ONE);
+			break;
+		case CONTINUE_PLAY:  //该功能暂时留待完善  先做好关卡
+			continue_game();
+			break;
+		case RANKING_LIST:
+			init_ranking_list();
 			break;
 		}
 	}

@@ -63,10 +63,17 @@ void main_printer(int type, int x, int y) {
 		SetColor(100, 461);
 		printf("88");
 		break;
+	case NEW_GAME:
+	case CONTINUE_PLAY:
+	case RANKING_LIST:
+		gotoxy(x, y);
+		printf("NN");
+		break;
 	default:
 		break;
 	}
 }
+
 
 //自动生成item
 void auto_make_item(int h) {
@@ -102,8 +109,7 @@ void aoto_make_wall(int h, int leval) {
 				int y = rand() % MAP_LENGTH;
 				for (int j = 0; j < temp; j++) {
 					if (x + j <= MAP_WIDTH) {
-						map_data[h][y][x + j] == WALL;
-						//main_printer(WALL, x + j, y);
+						map_data[h][y][x + j] = WALL;
 						count++;
 					}
 					else break;
@@ -116,7 +122,6 @@ void aoto_make_wall(int h, int leval) {
 				for (int j = 0; j < temp; j++) {
 					if (y + j <= MAP_LENGTH) {
 						map_data[h][y + j][x] = WALL;
-						//main_printer(WALL, x, y + j);
 						count++;
 					}
 					else break;
@@ -129,7 +134,6 @@ void aoto_make_wall(int h, int leval) {
 				for (int j = 0; j < temp; j++) {
 					if (y + j <= MAP_LENGTH && x + j <= MAP_WIDTH) {
 						map_data[h][y + j][x + j] = WALL;
-						//main_printer(WALL, x + j, y + j);
 						count++;
 					}
 					else break;
@@ -325,6 +329,9 @@ char key_input_detec(int h) {
 		scanf_s("%d", &choose);
 		switch (choose) {
 		case 1:
+			user1->score = score;
+			user1->state = now_state;
+			user_info_save(1);
 			map_data_save();
 			jump_to(MENU);
 			break;

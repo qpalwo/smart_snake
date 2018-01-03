@@ -106,7 +106,7 @@ void init_new_user() {
 	gotoxy((2 * MAP_WIDTH / 5) + 1, MAP_LENGTH / 5);
 	printf("请输入您的昵称：");
 	scanf_s("%s", &user1->name, 20);
-	user_info_save(1);    //存储用户信息到文件
+	//user_info_save(1);    //存储用户信息到文件
 }
 
 //clean map
@@ -123,33 +123,85 @@ void init_menu() {
 	//init_statebar();  //状态栏
 	init_snake();
 	for (int i = 0; i < 8; i++) {
-		main_printer(WALL, (2 * MAP_WIDTH / 5) + i, MAP_LENGTH / 5 - 1);
+		main_printer(WALL, (2 * MAP_WIDTH / 5) + i, MAP_LENGTH / 5 - 1);     //新游戏
 		main_printer(WALL, (2 * MAP_WIDTH / 5) + i, MAP_LENGTH / 5 + 1);
 		map_data[0][MAP_LENGTH / 5 - 1][(2 * MAP_WIDTH / 5) + i] = WALL;
 		map_data[0][MAP_LENGTH / 5 + 1][(2 * MAP_WIDTH / 5) + i] = WALL;
+
+		main_printer(WALL, (2 * MAP_WIDTH / 5) + i, 2 * MAP_LENGTH / 5 - 1);    //继续游戏
+		main_printer(WALL, (2 * MAP_WIDTH / 5) + i, 2 * MAP_LENGTH / 5 + 1);
+		map_data[0][2 * MAP_LENGTH / 5 - 1][(2 * MAP_WIDTH / 5) + i] = WALL;
+		map_data[0][2 * MAP_LENGTH / 5 + 1][(2 * MAP_WIDTH / 5) + i] = WALL;
+
+		main_printer(WALL, (2 * MAP_WIDTH / 5) + i, 3 * MAP_LENGTH / 5 - 1);    //排行榜
+		main_printer(WALL, (2 * MAP_WIDTH / 5) + i, 3 * MAP_LENGTH / 5 + 1);
+		map_data[0][3 * MAP_LENGTH / 5 - 1][(2 * MAP_WIDTH / 5) + i] = WALL;
+		map_data[0][3 * MAP_LENGTH / 5 + 1][(2 * MAP_WIDTH / 5) + i] = WALL;
 	}
 	init_sna_tomap(0);
 	init_map(0);
-	main_printer(NEW_GAME, (2 * MAP_WIDTH / 5) - 1, MAP_LENGTH / 5);
+
+	main_printer(NEW_GAME, (2 * MAP_WIDTH / 5) - 1, MAP_LENGTH / 5);       //新游戏
 	map_data[0][MAP_LENGTH / 5][(2 * MAP_WIDTH / 5) - 1] = NEW_GAME;
 	gotoxy((2 * MAP_WIDTH / 5) + 1, MAP_LENGTH / 5);
 	printf("新游戏");
+
+	main_printer(CONTINUE_PLAY, (2 * MAP_WIDTH / 5) - 1, 2 * MAP_LENGTH / 5);       //继续游戏
+	map_data[0][2 * MAP_LENGTH / 5][(2 * MAP_WIDTH / 5) - 1] = CONTINUE_PLAY;
+	gotoxy((2 * MAP_WIDTH / 5) + 1, 2 * MAP_LENGTH / 5);
+	printf("继续游戏");
+
+	main_printer(RANKING_LIST, (2 * MAP_WIDTH / 5) - 1, 3 * MAP_LENGTH / 5);       //排行榜
+	map_data[0][3 * MAP_LENGTH / 5][(2 * MAP_WIDTH / 5) - 1] = RANKING_LIST;
+	gotoxy((2 * MAP_WIDTH / 5) + 1, 3 * MAP_LENGTH / 5);
+	printf("排行榜");
+
 	move(0);
 }
 
-//初始化关卡一
-void init_one() {
-	score = 0;
-	clean_map(1);
-	//init_statebar();
-	init_snake();
-	init_sna_tomap(1);
-	aoto_make_wall(1, 1);
-	init_map(1);
-	item_choose(BASE_FOOD, 1);
-	Sleep(2000);
-	move(1);
+//选择用户界面
+user* user_info_read();
+void init_ranking_list() {
+	user *p1 = user_info_read();
+	int i = 5;
+	system("cls");
+	gotoxy(2 * MAP_WIDTH / 5, 4);
+	printf("玩家昵称");
+	gotoxy(3 * MAP_WIDTH / 5, 4);
+	printf("玩家得分");
+	gotoxy(4 * MAP_WIDTH / 5, 4);
+	printf("玩家关卡");
+	do{
+		if (p1 != NULL) {
+			gotoxy(2 * MAP_WIDTH / 5, i);
+			printf("%s", p1->name);
+			gotoxy(3 * MAP_WIDTH / 5, i);
+			printf("%d", p1->score);
+			gotoxy(4 * MAP_WIDTH / 5, i);
+			printf("%d", p1->state);
+		}
+		p1 = p1->next;
+		i++;
+	} while (p1);
+	gotoxy(3 * MAP_WIDTH / 5, i + 3);
+	printf("敲击任意键返回主界面");
+	_getch();
+	jump_to(MENU);
 }
+
+//初始化关卡
+void init_mission(int h) {
+	if(h == 1)score = 0;
+	clean_map(h);
+	init_snake();
+	init_sna_tomap(h);
+	aoto_make_wall(h, h);
+	init_map(h);
+	item_choose(BASE_FOOD, h);
+	Sleep(2000);
+	move(h);
+}
+
 
 //地图跳转函数
 void jump_to(int floor) {
@@ -162,7 +214,23 @@ void jump_to(int floor) {
 	case FLOOR_ONE:
 		now_state = 1;
 		system("cls");
-		init_one();
+		init_mission(1);
+	case FLOOR_TWO:
+		now_state = 2;
+		system("cls");
+		init_mission(2);
+	case FLOOR_THREE:
+		now_state = 3;
+		system("cls");
+		init_mission(3);
+	case FLOOR_FOUR:
+		now_state = 4;
+		system("cls");
+		init_mission(4);
+	case FLOOR_FIVE:
+		now_state = 5;
+		system("cls");
+		init_mission(5);
 	default:
 		break;
 	}
