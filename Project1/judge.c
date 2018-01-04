@@ -72,7 +72,6 @@ int move_judger(int x, int y, int h) {
 			item_choose(BASE_FOOD, h);
 			return 0;
 		case LAND_MINE:
-			//score /= 2;
 			return (length_of_snake() / 2 + 2);
 		case POISON_WEED:
 			speed -= 5;
@@ -80,6 +79,11 @@ int move_judger(int x, int y, int h) {
 		case WALL:
 			gotoxy(20, 15);
 			printf("你，你输了！！！");
+			if (user1) {
+				user1->score = score;                 //如果选择界面撞到墙也会清空
+				user1->state = now_state;
+			}
+			user_info_save(1, 0);
 			score = 0;
 			Sleep(3000);
 			jump_to(MENU);

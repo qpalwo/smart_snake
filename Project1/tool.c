@@ -331,7 +331,7 @@ char key_input_detec(int h) {
 		case 1:
 			user1->score = score;
 			user1->state = now_state;
-			user_info_save(1);
+			user_info_save(1, 0);
 			map_data_save();
 			jump_to(MENU);
 			break;
@@ -432,6 +432,5 @@ void move(int h) {
 			Sleep(speed);
 		}
 	}
-
 }
 

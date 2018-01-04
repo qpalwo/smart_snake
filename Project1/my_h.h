@@ -103,7 +103,7 @@ void fresh_score();
 int length_of_snake();
 int search_main(int h, int(*path)[2]);
 void init_new_user();
-void user_info_save(int mode);
+void user_info_save(int mode, int choose_id);
 int map_data_save();
 int map_data_read();
 void init_map(int floor);
@@ -132,6 +132,7 @@ typedef struct user_information {
 	int state;
 	int score;
 	char name[20];
+	int id;
 	struct user_information *next;
 }user;
 

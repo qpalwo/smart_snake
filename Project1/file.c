@@ -3,16 +3,47 @@
 FILE *fp;
 
 //用户信息保存
-void user_info_save(int mode) {
+/*
+mode 添加模式   1  新用户注册  2  用户信息修改，如分数更新等等
+choose_id    mode2 时使用，要修改的用户的id 
+*/
+void user_info_save(int mode, int choose_id) {
 	user1->state = now_state;
-	if (fopen_s(&fp, "user_info.xst", "a")) {
-		fopen_s(&fp, "user_info.xst", "w");
+	FILE *fp2;
+	int all_users = 1;
+	if (fopen_s(&fp, "user_info.xst", "r")) {
+		fopen_s(&fp, "user_info.xst", "ab");
+		fopen_s(&fp2, "user_info_s.xst", "wb+");
+		fprintf(fp2, "%d ", all_users);
 	}
+	else{
+		fclose(fp);
+		fopen_s(&fp, "user_info.xst", "ab");
+		fopen_s(&fp2, "user_info_s.xst", "rb");
+	}
+	fscanf_s(fp2, "%d ", &all_users);
+	fclose(fp2);
 	switch (mode) {
 	case 1:    //添加新用户
-		fwrite(user1, sizeof(user), 1, fp);
+	/*	if (user1->id < all_users) {
+			fclose(fp);
+			fopen_s(&fp, "user_info.xst", "rb+");
+			fseek(fp, (user1->id - 1) * sizeof(user), 1);
+			fwrite(user1, sizeof(user), 1, fp);
+			break;
+		}*/
+		user1->id = all_users;
+		int temp = fwrite(user1, sizeof(user), 1, fp);
+		all_users++;
+		fopen_s(&fp2, "user_info_s.xst", "wb");
+		fprintf(fp2, "%d ", all_users);
+		fclose(fp2);
 		break;
-	case 2:    //用户信息修改(涉及随机读取，稍后再议)
+	case 2:    //用户信息修改
+		fclose(fp);
+		fopen_s(&fp, "user_info.xst", "rb+");
+		fseek(fp, (choose_id - 1) * sizeof(user), 1);
+		fwrite(user1, sizeof(user), 1, fp);
 		break;
 	}
 	fclose(fp);
@@ -21,11 +52,15 @@ void user_info_save(int mode) {
 //用户信息读取
 user* user_info_read() {
 	user *p_temp;
-	if (!fopen_s(&fp, "user_info.xst", "r")) {
+	if (!fopen_s(&fp, "user_info.xst", "rb")) {
+		//FILE *fp2;
 		user *p1 = NULL;
+		//int temp;
+		//fopen_s(&fp2, "user_info_s.xst", "rb");
+		//fscanf_s(fp2, "%d ", &temp);
 		p1 = (user*)malloc(sizeof(user));
 		p_temp = p1;
-		fread(p1, sizeof(user), 1, fp);
+		int temp1 = fread(p1, sizeof(user), 1, fp);
 		p1->next = NULL;
 		while (!feof(fp)){
 			user *p2 = (user*)malloc(sizeof(user));
@@ -42,11 +77,11 @@ user* user_info_read() {
 
 //地图保存(游戏进度保存)
 int map_data_save() {
-	fopen_s(&fp, "temp_map_data.xst", "w");
+	fopen_s(&fp, "temp_map_data.xst", "wb");
 	int i = fwrite(map_data, sizeof(map_data), 1, fp);
-	fprintf(fp, "%d", now_state);
+	fprintf(fp, "%d ", now_state);
 	fclose(fp);
-	fopen_s(&fp, "temp_snake_data.xst", "w");
+	fopen_s(&fp, "temp_snake_data.xst", "wb");
 	fprintf(fp, "%d ", length_of_snake());
 	snake *p1 = snake_head;
 	while (p1){
@@ -59,11 +94,11 @@ int map_data_save() {
 
 //地图读取（游戏进度读取）
 int map_data_read() {
-	if (!fopen_s(&fp, "temp_map_data.xst", "r")) {
+	if (!fopen_s(&fp, "temp_map_data.xst", "rb")) {
 		int i = fread(map_data, sizeof(map_data), 1, fp);
-		fscanf_s(fp, "%d", &now_state);
+		fscanf_s(fp, "%d ", &now_state);
 		fclose(fp);
-		fopen_s(&fp, "temp_snake_data.xst", "r");
+		fopen_s(&fp, "temp_snake_data.xst", "rb");
 		int length_of_snake = 0;
 		fscanf_s(fp, "%d ", &length_of_snake);
 		snake *p1 = (snake*)malloc(SIZEOF_SNAKE);
@@ -92,7 +127,4 @@ int map_data_read() {
 	else return -1;
 }
 
-//游戏结果统计
-void end_game() {
 
-}
