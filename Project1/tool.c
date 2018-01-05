@@ -186,6 +186,21 @@ void delete_tail(int num, int h) {
 	assert(snake_tail);
 }
 
+//计算出的路变成蛇能走的
+void go_on_the_way(int h) {
+	search_main(h);
+	path *p1 = find_ending;
+	//system("cls");
+	while (p1) {
+		insert_head(p1->x, p1->y, h);
+		printer_snake_body_1(snake_head->x, snake_head->y);
+		delete_tail(1, h);
+		Sleep(speed);
+		//printf("%d\t%d\n", p1->x, p1->y);
+		p1 = p1->previous;
+	}
+}
+
 //键盘缓存数组复位函数
 void init_key_temp() {
 	for (int i = 0; i < 2; i++) {
@@ -315,10 +330,11 @@ char key_input_detec(int h) {
 	}
 	//测试自动寻路
 	else if (key_temp[2] == 102) {
-		int path[100][2] = {0};
+		go_on_the_way(h);
+		/*int path[100][2] = {0};
 		search_main(h, path);
 		for (int i = 0; i < 100; i++)
-			printf("%d   %d  \t", path[i][0], path[i][1]);
+			printf("%d   %d  \t", path[i][0], path[i][1]);*/
 		system("pause");
 	}
 	else if (key_temp[2] == 8) {

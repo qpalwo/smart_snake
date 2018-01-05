@@ -131,20 +131,18 @@ int find_food(int h) {
 //计算 H
 int cacl_h(int h, int x, int y) {
 	int sum = 0;
-	//if (find_food(h)) {
-		sum = abs(x - food_x) + abs(y - food_y);
-		return sum;
-	//}
-	//else return -1;
+	sum = abs(x - food_x) + abs(y - food_y);
+	return sum;
 }
 
 //方向向量
 int direct[4][2] = { { 0, 1 },{ 1, 0 },{ 0, -1 },{ -1, 0 } };
 
-
-
 //记录f的地图
 int f_map[MAP_LENGTH][MAP_WIDTH];
+
+//寻路结果
+path *find_ending = NULL;
 
 //初始化open表和f_map
 queue *queue_head = NULL;
@@ -157,12 +155,7 @@ void init_queue(int h) {
 	queue_head = (queue*)malloc(sizeof(queue));
 	queue_head->node = (node*)malloc(sizeof(node));
 	queue_head->node->father = NULL;
-	//queue_head->node->x = snake_head->x;
-	//queue_head->node->y = snake_head->y;
-	//queue_head->node->h = cacl_h(h, snake_head->x, snake_head->y);
-	//queue_head->node->g = 0;
 	queue_head->f = -2;
-	//f_map[snake_head->y][snake_head->x] = queue_head->f;
 	queue_head->next = (queue*)malloc(sizeof(queue));
 	queue_head->next->next = NULL;
 	queue_head->next->node = NULL;
@@ -190,7 +183,7 @@ void add_to_open(node *node) {
 	int f = 0;
 	queue *p1 = queue_head, *p2 = NULL, *p3 = NULL;
 	f = (node->h + node->g);
-	while (f > p1->f){
+	while (f > p1->f) {
 		p2 = p1;
 		p1 = p1->next;
 	}
@@ -217,14 +210,49 @@ void free_all() {
 		p1 = close_list_head;
 		p2 = close_list_head->node;
 		close_list_head = close_list_head->next;
-		free(p1);
-		free(p2);
+		if(p1 != NULL)
+			free(p1);
+		if (p2 != NULL);
+			//free(p2);
 	}
 }
 
 //尝试路径
 int try_go(int h, int x, int y, node *father) {
 	if (x >= 0 && x <= MAP_WIDTH && y >= 0 && y <= MAP_LENGTH) {
+		node *p2 = (node*)malloc(sizeof(node));
+		if (x == food_x && y == food_y) {            //如果找到路了
+			p2->x = x;
+			p2->y = y;
+			p2->h = cacl_h(h, x, y);
+			p2->g = father->g + 1;
+			p2->father = father;
+			path *p_path = (path*)malloc(sizeof(path));
+			p_path->previous = NULL;
+			path *p_temp = NULL;
+			while (p2) {
+				p_path->x = p2->x;
+				p_path->y = p2->y;
+				p_temp = p_path;
+				p_path = (path*)malloc(sizeof(path));
+				p_temp->next = p_path;
+				p_path->previous = p_temp;
+				p2 = p2->father;
+			}
+			p_path->next = NULL;
+			p_path->previous->next = NULL;
+			find_ending = p_path->previous;
+			free(p_path);
+			/*system("cls");
+			printf("find way");
+			system("pause");*/
+			free_all();
+			return -1;
+		}
+		int *p_x = &x;
+		int *p_y = &y;
+		judge_outu(p_x, p_y);
+
 		if (map_data[h][y][x] != 0) return 1;    //如果是墙，out
 		queue *p1 = close_list_head;
 		while (p1) {
@@ -234,7 +262,6 @@ int try_go(int h, int x, int y, node *father) {
 			}
 			else p1 = p1->next;
 		}
-		node *p2 = (node*)malloc(sizeof(node));
 		p2->x = x;
 		p2->y = y;
 		p2->h = cacl_h(h, x, y);
@@ -242,15 +269,15 @@ int try_go(int h, int x, int y, node *father) {
 		p2->father = father;
 		if (f_map[y][x] != -1 && (p2->h + p2->g) >= f_map[y][x]) return 1;   //如果有更好的路径，out
 		f_map[y][x] = (p2->h + p2->g);
-		Sleep(50);
+		//Sleep(50);
 		add_to_open(p2);
-		main_printer(461, x, y);
+		//main_printer(461, x, y);
 		return 0;
 	}
 }
 
 //寻路主函数
-int search_main(int h, int(*path)[2]) {
+int search_main(int h) {
 	init_queue(h);
 	init_close_lise();
 	node *p1;
@@ -266,7 +293,7 @@ int search_main(int h, int(*path)[2]) {
 		int search = 0;
 		p1 = queue_head->next->node;
 		add_to_close(p1);
-		if (p1->x == food_x && p1->y == food_y) {
+		/*if (p1->x == food_x && p1->y == food_y) {
 			int i = 0;
 			while (p1) {
 				path[i][0] = p1->x;
@@ -276,13 +303,17 @@ int search_main(int h, int(*path)[2]) {
 			}
 			free_all();
 			return 0;
-		}
-		search = try_go(h, p1->x, p1->y + 1, p1);
-		search = try_go(h, p1->x, p1->y - 1, p1);
-		search = try_go(h, p1->x + 1, p1->y, p1);
-		search = try_go(h, p1->x - 1, p1->y, p1);
+		}*/
+		int temp = 0;
+		search = temp = try_go(h, p1->x, p1->y + 1, p1);
+		if (temp == -1) return 0;
+		search &= temp = try_go(h, p1->x, p1->y - 1, p1);
+		if (temp == -1) return 0;
+		search &= temp = try_go(h, p1->x + 1, p1->y, p1);
+		if (temp == -1) return 0;
+		search &= temp = try_go(h, p1->x - 1, p1->y, p1);
+		if (temp == -1) return 0;
 		if (search != 0) {
-			//add_to_close(p1);
 			queue *p2 = queue_head->next;
 			queue_head->next = queue_head->next->next;
 			free(p2);
@@ -290,4 +321,6 @@ int search_main(int h, int(*path)[2]) {
 	}
 	return 1;
 }
+
+
 

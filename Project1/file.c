@@ -25,13 +25,6 @@ void user_info_save(int mode, int choose_id) {
 	fclose(fp2);
 	switch (mode) {
 	case 1:    //添加新用户
-	/*	if (user1->id < all_users) {
-			fclose(fp);
-			fopen_s(&fp, "user_info.xst", "rb+");
-			fseek(fp, (user1->id - 1) * sizeof(user), 1);
-			fwrite(user1, sizeof(user), 1, fp);
-			break;
-		}*/
 		user1->id = all_users;
 		int temp = fwrite(user1, sizeof(user), 1, fp);
 		all_users++;
@@ -53,11 +46,7 @@ void user_info_save(int mode, int choose_id) {
 user* user_info_read() {
 	user *p_temp;
 	if (!fopen_s(&fp, "user_info.xst", "rb")) {
-		//FILE *fp2;
 		user *p1 = NULL;
-		//int temp;
-		//fopen_s(&fp2, "user_info_s.xst", "rb");
-		//fscanf_s(fp2, "%d ", &temp);
 		p1 = (user*)malloc(sizeof(user));
 		p_temp = p1;
 		int temp1 = fread(p1, sizeof(user), 1, fp);

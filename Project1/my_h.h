@@ -101,13 +101,13 @@ void jump_to(int floor);
 void SetColor(unsigned short ForeColor, unsigned short BackGroundColor);
 void fresh_score();
 int length_of_snake();
-int search_main(int h, int(*path)[2]);
+int search_main(int h);
+void go_on_the_way(int h);
 void init_new_user();
 void user_info_save(int mode, int choose_id);
 int map_data_save();
 int map_data_read();
 void init_map(int floor);
-//int user_info_read(user *p_temp);
 
 //全局速度
 extern int speed;
@@ -120,6 +120,7 @@ typedef struct search_node {
 	int g;
 	struct search_node *father;
 }node;
+
 
 typedef struct queue_node {
 	node *node;
@@ -137,5 +138,15 @@ typedef struct user_information {
 }user;
 
 extern user *user1;
+
+//路径信息
+typedef struct path_node {
+	int x;
+	int y;
+	struct path_node *next;
+	struct path_node *previous;
+}path;
+
+extern path *find_ending;
 
 #endif // MY_H_H_INCLUDED
