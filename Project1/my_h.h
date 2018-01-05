@@ -56,6 +56,8 @@
 #define FLOOR_FIVE 1013
 #define USER_CHOOSE 1014
 #define RANKING_LIST 1015
+#define SMART_WEED 1016
+#define SHOW_MODE 1017
 
 
 
@@ -94,7 +96,7 @@ void main_printer(int type, int x, int y);
 void gotoxy(int x, int y);
 void move(int h);
 int base_item_judger(int x, int y, int h);
-void item_choose(int choose, int h);
+void make_base_item(int choose, int h);
 int move_judger(int x, int y, int h);
 void aoto_make_wall(int h, int leval);
 void jump_to(int floor);

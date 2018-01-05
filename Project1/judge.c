@@ -22,15 +22,18 @@ void continue_game() {
 
 
 //关卡跳转
+extern path *find_ending;
 void mission_jump() {
-	if (length_of_snake() >= now_state * 5) {
-		system("cls");
-		gotoxy(MAP_WIDTH / 2, MAP_LENGTH / 2);
-		SetColor(1, 5);
-		printf("恭喜过关！！！");
-		SetColor(7, 0);
-		Sleep(2000);
-		jump_to(now_state + 1009);  //跳转到下一关；
+	if (find_ending == NULL) {
+		if (length_of_snake() >= now_state * 5) {
+			system("cls");
+			gotoxy(MAP_WIDTH / 2, MAP_LENGTH / 2);
+			SetColor(1, 5);
+			printf("恭喜过关！！！");
+			SetColor(7, 0);
+			Sleep(2000);
+			jump_to(now_state + 1009);  //跳转到下一关；
+		}
 	}
 }
 
@@ -69,7 +72,7 @@ int move_judger(int x, int y, int h) {
 		case BASE_FOOD:
 			score++;
 			mission_jump();
-			item_choose(BASE_FOOD, h);
+			make_base_item(BASE_FOOD, h);
 			return 0;
 		case LAND_MINE:
 			return (length_of_snake() / 2 + 2);
@@ -97,6 +100,10 @@ int move_judger(int x, int y, int h) {
 			break;
 		case RANKING_LIST:
 			init_ranking_list();
+			break;
+		case SMART_WEED:
+			for(int i = 0; i < 3; i++)
+				go_on_the_way(h);
 			break;
 		}
 	}
@@ -176,6 +183,15 @@ void add_to_close(node *node) {
 	p1->node = node;
 	p1->next = close_list_head;
 	close_list_head = p1;
+
+	queue *p3 = queue_head, *p2 = NULL;
+
+	//ceshi
+	p2 = p3->next;
+	if (p3->next->next != NULL) {
+		p3->next = p3->next->next;
+		free(p2);
+	}
 }
 
 //添加当前节点到open表
@@ -214,7 +230,7 @@ void free_all() {
 			free(p1);
 		if (p2 != NULL);
 			//free(p2);
-	}
+	}  //    此处功能实现的不是很好，存在内存泄漏的问题。
 }
 
 //尝试路径
@@ -292,18 +308,8 @@ int search_main(int h) {
 	while (1) {
 		int search = 0;
 		p1 = queue_head->next->node;
+		if (queue_head->next->next == NULL) return -1;
 		add_to_close(p1);
-		/*if (p1->x == food_x && p1->y == food_y) {
-			int i = 0;
-			while (p1) {
-				path[i][0] = p1->x;
-				path[i][1] = p1->y;
-				i++;
-				p1 = p1->father;
-			}
-			free_all();
-			return 0;
-		}*/
 		int temp = 0;
 		search = temp = try_go(h, p1->x, p1->y + 1, p1);
 		if (temp == -1) return 0;

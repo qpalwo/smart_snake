@@ -197,7 +197,7 @@ void init_mission(int h) {
 	init_sna_tomap(h);
 	aoto_make_wall(h, h);
 	init_map(h);
-	item_choose(BASE_FOOD, h);
+	make_base_item(BASE_FOOD, h);
 	Sleep(2000);
 	move(h);
 }

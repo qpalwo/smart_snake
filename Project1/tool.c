@@ -69,10 +69,53 @@ void main_printer(int type, int x, int y) {
 		gotoxy(x, y);
 		printf("NN");
 		break;
+	case SMART_WEED:
+		SetColor(8, 2);
+		gotoxy(x, y);
+		printf("※");
+		SetColor(7, 0);
+		break;
 	default:
 		break;
 	}
 }
+
+
+/*
+h  地图层数
+choose 输出种类
+*/
+void make_base_item(int choose, int h) {
+	int item_x, item_y;
+
+	do {
+		item_x = rand() % MAP_WIDTH;
+		item_y = rand() % MAP_LENGTH;
+	} while (base_item_judger(item_x, item_y, h));
+
+	switch (choose) {
+	case BASE_FOOD:
+		map_data[h][item_y][item_x] = BASE_FOOD;
+		main_printer(BASE_FOOD, item_x, item_y);
+		break;
+	case LAND_MINE:
+		map_data[h][item_y][item_x] = LAND_MINE;
+		main_printer(LAND_MINE, item_x, item_y);
+		break;
+	case POISON_WEED:
+		map_data[h][item_y][item_x] = POISON_WEED;
+		main_printer(POISON_WEED, item_x, item_y);
+		break;
+	case SMART_WEED:
+		map_data[h][item_y][item_x] = SMART_WEED;
+		main_printer(SMART_WEED, item_x, item_y);
+		break;
+	default:
+		break;
+	}
+
+}
+
 
 
 //自动生成item
@@ -81,10 +124,13 @@ void auto_make_item(int h) {
 		int key = rand() % 300;
 		switch (key) {
 		case 201:
-			item_choose(LAND_MINE, h);
+			make_base_item(LAND_MINE, h);
 			break;
 		case 78:
-			item_choose(POISON_WEED, h);
+			make_base_item(POISON_WEED, h);
+			break;
+		case 150:
+			make_base_item(SMART_WEED, h);
 			break;
 		default:
 			break;
@@ -188,16 +234,25 @@ void delete_tail(int num, int h) {
 
 //计算出的路变成蛇能走的
 void go_on_the_way(int h) {
-	search_main(h);
-	path *p1 = find_ending;
-	//system("cls");
-	while (p1) {
-		insert_head(p1->x, p1->y, h);
-		printer_snake_body_1(snake_head->x, snake_head->y);
-		delete_tail(1, h);
-		Sleep(speed);
-		//printf("%d\t%d\n", p1->x, p1->y);
-		p1 = p1->previous;
+	int flag = 0;
+	flag = search_main(h);
+	if (flag != -1) {
+		path *p1 = find_ending;
+		while (p1) {
+			int d_s;
+			d_s = move_judger(p1->x, p1->y, h);
+			fresh_score();
+			insert_head(p1->x, p1->y, h);
+			printer_snake_body_1(snake_head->x, snake_head->y);
+			if (d_s < length_of_snake())
+				delete_tail(d_s, h);
+			Sleep(speed / 2);
+			p1 = p1->previous;
+		}
+	}
+	else {
+		gotoxy(MAP_WIDTH + 1 + STATEBAR_WIDTH + 5, 20);
+		printf("can't find way");
 	}
 }
 
@@ -331,11 +386,6 @@ char key_input_detec(int h) {
 	//测试自动寻路
 	else if (key_temp[2] == 102) {
 		go_on_the_way(h);
-		/*int path[100][2] = {0};
-		search_main(h, path);
-		for (int i = 0; i < 100; i++)
-			printf("%d   %d  \t", path[i][0], path[i][1]);*/
-		system("pause");
 	}
 	else if (key_temp[2] == 8) {
 		system("cls");
