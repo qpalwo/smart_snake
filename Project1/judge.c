@@ -11,7 +11,11 @@ int base_item_judger(int x, int y, int h) {
 
 void continue_game() {
 	if (user1 == NULL) {
-
+		system("cls");
+		gotoxy(17, 15);
+		printf("当前无记录");
+		Sleep(2000);
+		jump_to(MENU);
 	}
 	else {
 		map_data_read();
@@ -25,7 +29,8 @@ void continue_game() {
 extern path *find_ending;
 void mission_jump() {
 	if (find_ending == NULL) {
-		if (length_of_snake() >= now_state * 5) {
+		if ((length_of_snake() >= now_state * 6 && now_state != 1)
+			|| (now_state == 1 && length_of_snake() >= 8)) {
 			system("cls");
 			gotoxy(MAP_WIDTH / 2, MAP_LENGTH / 2);
 			SetColor(1, 5);
@@ -42,7 +47,7 @@ void init_ranking_list();
    h   地图层数
 
 */
-int move_judger(int x, int y, int h) {
+int move_judger(int x, int y, int h, int *p_direct) {
 	if (x >= 0 && y >= 0) {
 		switch (map_data[h][y][x]) {
 		case 0:
@@ -80,15 +85,17 @@ int move_judger(int x, int y, int h) {
 			speed -= 5;
 			return 2;
 		case WALL:
-			gotoxy(20, 15);
-			printf("你，你输了！！！");
 			if (user1) {
 				user1->score = score;                 //如果选择界面撞到墙也会清空
 				user1->state = now_state;
 			}
-			user_info_save(1, 0);
-			score = 0;
-			Sleep(3000);
+			if (now_state != 0) {
+				user_info_save(1, 0);
+				score = 0;
+				gotoxy(20, 15);
+				printf("你，你输了！！！");
+				Sleep(3000);
+			}
 			jump_to(MENU);
 			break;
 		case NEW_GAME:
@@ -102,8 +109,17 @@ int move_judger(int x, int y, int h) {
 			init_ranking_list();
 			break;
 		case SMART_WEED:
+			gotoxy(x, y);
+			printf("  ");
+			map_data[h][y][x] == 0;
+			int temp;
 			for(int i = 0; i < 3; i++)
-				go_on_the_way(h);
+				temp = go_on_the_way(h);
+			*p_direct = temp;
+			key_temp[1] = temp;
+			return SMART_WEED;
+		case SHOW_MODE:
+			jump_to(SHOW_MODE);
 			break;
 		}
 	}
@@ -259,9 +275,6 @@ int try_go(int h, int x, int y, node *father) {
 			p_path->previous->next = NULL;
 			find_ending = p_path->previous;
 			free(p_path);
-			/*system("cls");
-			printf("find way");
-			system("pause");*/
 			free_all();
 			return -1;
 		}
@@ -307,6 +320,7 @@ int search_main(int h) {
 	add_to_open(p1);
 	while (1) {
 		int search = 0;
+		if (queue_head->next == NULL) return -1;
 		p1 = queue_head->next->node;
 		if (queue_head->next->next == NULL) return -1;
 		add_to_close(p1);

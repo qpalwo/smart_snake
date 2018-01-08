@@ -63,7 +63,7 @@ void init_map(int floor) {
 
 //刷新分数 and user info
 void fresh_score() {
-	SetColor(6, 4);
+	SetColor(10, 4);
 	gotoxy(MAP_WIDTH + 5, 5);
 	printf("得分：%d", score);
 	gotoxy(MAP_WIDTH + 5, 3);
@@ -74,7 +74,7 @@ void fresh_score() {
 
 //初始化状态区
 void init_statebar() {
-	SetColor(7, 7);
+	SetColor(7, 4);
 	for(int i = 0; i < STATEBAR_WIDTH; i++)
 		for (int j = 0; j < MAP_LENGTH; j++) {
 			gotoxy(MAP_WIDTH + 1 + i, j);
@@ -156,6 +156,10 @@ void init_menu() {
 	gotoxy((2 * MAP_WIDTH / 5) + 1, 3 * MAP_LENGTH / 5);
 	printf("排行榜");
 
+	map_data[0][4 * MAP_LENGTH / 5][(4 * MAP_WIDTH / 5) - 1] = SHOW_MODE;
+	gotoxy((4 * MAP_WIDTH / 5) - 1, 4 * MAP_LENGTH / 5);
+	printf("SS");
+
 	move(0);
 }
 
@@ -172,7 +176,7 @@ void init_ranking_list() {
 	gotoxy(4 * MAP_WIDTH / 5, 4);
 	printf("玩家关卡");
 	do{
-		if (p1 != NULL) {
+		if (p1 != NULL && p1->score >= 0 && p1->score <= 10000) {
 			gotoxy(2 * MAP_WIDTH / 5, i);
 			printf("%s", p1->name);
 			gotoxy(3 * MAP_WIDTH / 5, i);
@@ -200,6 +204,18 @@ void init_mission(int h) {
 	make_base_item(BASE_FOOD, h);
 	Sleep(2000);
 	move(h);
+}
+
+//初始化show_mode
+void init_show_mode() {
+	clean_map(10);
+	init_snake();
+	init_sna_tomap(10);
+	init_map(10);
+	make_base_item(BASE_FOOD, 10);
+	while (1) {
+		go_on_the_way(10);
+	}
 }
 
 
@@ -231,6 +247,9 @@ void jump_to(int floor) {
 		now_state = 5;
 		system("cls");
 		init_mission(5);
+	case SHOW_MODE:
+		system("cls");
+		init_show_mode();
 	default:
 		break;
 	}

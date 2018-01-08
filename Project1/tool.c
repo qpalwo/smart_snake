@@ -155,8 +155,10 @@ void aoto_make_wall(int h, int leval) {
 				int y = rand() % MAP_LENGTH;
 				for (int j = 0; j < temp; j++) {
 					if (x + j <= MAP_WIDTH) {
-						map_data[h][y][x + j] = WALL;
-						count++;
+						if (map_data[h][y][x + j] == 0) {
+							map_data[h][y][x + j] = WALL;
+							count++;
+						}
 					}
 					else break;
 				}
@@ -167,8 +169,10 @@ void aoto_make_wall(int h, int leval) {
 				int y = rand() % MAP_LENGTH;
 				for (int j = 0; j < temp; j++) {
 					if (y + j <= MAP_LENGTH) {
-						map_data[h][y + j][x] = WALL;
-						count++;
+						if (map_data[h][y + j][x] == 0) {
+							map_data[h][y + j][x] = WALL;
+							count++;
+						}
 					}
 					else break;
 				}
@@ -179,8 +183,10 @@ void aoto_make_wall(int h, int leval) {
 				int y = rand() % MAP_LENGTH;
 				for (int j = 0; j < temp; j++) {
 					if (y + j <= MAP_LENGTH && x + j <= MAP_WIDTH) {
-						map_data[h][y + j][x + j] = WALL;
-						count++;
+						if (map_data[h][y + j][x + j] == 0) {
+							map_data[h][y + j][x + j] = WALL;
+							count++;
+						}
 					}
 					else break;
 				}
@@ -233,26 +239,37 @@ void delete_tail(int num, int h) {
 }
 
 //计算出的路变成蛇能走的
-void go_on_the_way(int h) {
+//返回值即最后一步的下一步该走的方向
+int go_on_the_way(int h) {
 	int flag = 0;
+	int *pp = NULL;
 	flag = search_main(h);
+	path *p_h = NULL;
 	if (flag != -1) {
 		path *p1 = find_ending;
 		while (p1) {
 			int d_s;
-			d_s = move_judger(p1->x, p1->y, h);
+			d_s = move_judger(p1->x, p1->y, h, pp);
 			fresh_score();
 			insert_head(p1->x, p1->y, h);
 			printer_snake_body_1(snake_head->x, snake_head->y);
 			if (d_s < length_of_snake())
 				delete_tail(d_s, h);
-			Sleep(speed / 2);
+			Sleep(speed / 3);
+			if (p1->previous == NULL) p_h = p1;
 			p1 = p1->previous;
 		}
 	}
 	else {
 		gotoxy(MAP_WIDTH + 1 + STATEBAR_WIDTH + 5, 20);
 		printf("can't find way");
+		system("pause");
+	}
+	if (p_h != NULL) {
+		if (p_h->x == p_h->next->x && p_h->y == p_h->next->y + 1) return DOWN;
+		else if (p_h->x == p_h->next->x && p_h->y == p_h->next->y - 1) return UP;
+		else if (p_h->x == p_h->next->x + 1 && p_h->y == p_h->next->y) return RIGHT;
+		else if (p_h->x == p_h->next->x - 1 && p_h->y == p_h->next->y) return LEFT;
 	}
 }
 
@@ -439,10 +456,16 @@ h  第几层地图
 */
 void keep_move(int direct, int h) {
 	int d_s;  //  删除的身体节数
+	int *p_direct = &direct;
+	TAG:
 	switch (direct) {
 	case UP:
 	case W:
-		d_s = move_judger(snake_head->x, snake_head->y - 1, h);
+		d_s = move_judger(snake_head->x, snake_head->y - 1, h, p_direct);
+		if (d_s == SMART_WEED) {
+			goto TAG;
+			d_s = 1;
+		}
 		fresh_score();
 		insert_head(snake_head->x, snake_head->y - 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
@@ -451,7 +474,11 @@ void keep_move(int direct, int h) {
 		break;
 	case LEFT:
 	case A:
-		d_s = move_judger(snake_head->x - 1, snake_head->y, h);
+		d_s = move_judger(snake_head->x - 1, snake_head->y, h, p_direct);
+		if (d_s == SMART_WEED) {
+			goto TAG;
+			d_s = 1;
+		}
 		fresh_score();
 		insert_head(snake_head->x - 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
@@ -460,7 +487,11 @@ void keep_move(int direct, int h) {
 		break;
 	case DOWN:
 	case S:
-		d_s = move_judger(snake_head->x, snake_head->y + 1, h);
+		d_s = move_judger(snake_head->x, snake_head->y + 1, h, p_direct);
+		if (d_s == SMART_WEED) {
+			goto TAG;
+			d_s = 1;
+		}
 		fresh_score();
 		insert_head(snake_head->x, snake_head->y + 1, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);
@@ -469,7 +500,11 @@ void keep_move(int direct, int h) {
 		break;
 	case RIGHT:
 	case D:
-		d_s = move_judger(snake_head->x + 1, snake_head->y, h);
+		d_s = move_judger(snake_head->x + 1, snake_head->y, h, p_direct);
+		if (d_s == SMART_WEED) {
+			goto TAG;
+			d_s = 1;
+		}
 		fresh_score();
 		insert_head(snake_head->x + 1, snake_head->y, h);
 		printer_snake_body_1(snake_head->x, snake_head->y);

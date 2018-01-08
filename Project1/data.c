@@ -1,7 +1,7 @@
 #include "my_h.h"
 
 //µØÍ¼Êý×é
-int map_data[MAP_HEIGHT + 20][MAP_LENGTH+ 20][MAP_WIDTH + 20] = { 0 };
+int map_data[MAP_HEIGHT][MAP_LENGTH][MAP_WIDTH] = { 0 };
 
 //×´Ì¬À¸
 int statebar_data[MAP_LENGTH + 10][STATEBAR_WIDTH + 10] = { 0 };

@@ -19,7 +19,7 @@
 //地图大小
 #define MAP_WIDTH 40     //x
 #define MAP_LENGTH 30    //y
-#define MAP_HEIGHT 2  
+#define MAP_HEIGHT 10  
 #define STATEBAR_WIDTH 15
 
 //init snake head location
@@ -79,7 +79,7 @@ snake *snake_tail;
 #define SIZEOF_SNAKE sizeof(snake)
 
 //地图
-extern int map_data[MAP_HEIGHT + 20][MAP_LENGTH + 20][MAP_WIDTH + 20];
+extern int map_data[MAP_HEIGHT][MAP_LENGTH][MAP_WIDTH];
 
 //记分板
 extern int statebar_data[MAP_LENGTH + 10][STATEBAR_WIDTH + 10];
@@ -97,14 +97,14 @@ void gotoxy(int x, int y);
 void move(int h);
 int base_item_judger(int x, int y, int h);
 void make_base_item(int choose, int h);
-int move_judger(int x, int y, int h);
+int move_judger(int x, int y, int h, int *p_direct);
 void aoto_make_wall(int h, int leval);
 void jump_to(int floor);
 void SetColor(unsigned short ForeColor, unsigned short BackGroundColor);
 void fresh_score();
 int length_of_snake();
 int search_main(int h);
-void go_on_the_way(int h);
+int go_on_the_way(int h);
 void init_new_user();
 void user_info_save(int mode, int choose_id);
 int map_data_save();
