@@ -75,6 +75,18 @@ snake *snake_head;
 //蛇尾
 snake *snake_tail;
 
+
+//毒草链表
+typedef struct poison_weed_list{
+	int x; 
+	int y;
+	struct poison_weed_list *next;
+}poison_weed;
+
+poison_weed *ps_head;
+
+extern int ps_time;
+
 //结构体大小
 #define SIZEOF_SNAKE sizeof(snake)
 
@@ -110,6 +122,7 @@ void user_info_save(int mode, int choose_id);
 int map_data_save();
 int map_data_read();
 void init_map(int floor);
+void poison_weed_delete(int h, int mode);
 
 //全局速度
 extern int speed;
@@ -150,5 +163,6 @@ typedef struct path_node {
 }path;
 
 extern path *find_ending;
+
 
 #endif // MY_H_H_INCLUDED

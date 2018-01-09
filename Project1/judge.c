@@ -83,6 +83,14 @@ int move_judger(int x, int y, int h, int *p_direct) {
 			return (length_of_snake() / 2 + 2);
 		case POISON_WEED:
 			speed -= 5;
+			poison_weed *p_temp = ps_head;
+			poison_weed *p_temp2 = NULL;
+			while (p_temp->x != x || p_temp->y != y){
+				p_temp2 = p_temp;
+				p_temp = p_temp->next;
+			}
+			p_temp2->next = p_temp->next;
+			free(p_temp);
 			return 2;
 		case WALL:
 			if (user1) {
@@ -96,6 +104,7 @@ int move_judger(int x, int y, int h, int *p_direct) {
 				printf("Äã£¬ÄãÊäÁË£¡£¡£¡");
 				Sleep(3000);
 			}
+			poison_weed_delete(h, 2);
 			jump_to(MENU);
 			break;
 		case NEW_GAME:

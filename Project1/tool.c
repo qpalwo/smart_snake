@@ -80,6 +80,65 @@ void main_printer(int type, int x, int y) {
 	}
 }
 
+//毒草插入
+void poison_weed_made(int h, int num) {
+	int item_x, item_y;
+	poison_weed *p1 = NULL;
+	ps_head = (poison_weed*)malloc(sizeof(poison_weed));
+	ps_head->next = NULL;
+	ps_head->x = -1;
+	ps_head->y = -1;
+	if (num <= 4 || num >= 10) num = 8;
+	for (int i = 0; i < num; i++) {
+		do {
+			item_x = rand() % MAP_WIDTH;
+			item_y = rand() % MAP_LENGTH;
+		} while (base_item_judger(item_x, item_y, h));
+		p1 = (poison_weed*)malloc(sizeof(poison_weed));
+		p1->x = item_x;
+		p1->y = item_y;
+		p1->next = ps_head;
+		ps_head = p1;
+		map_data[h][item_y][item_x] = POISON_WEED;
+		main_printer(POISON_WEED, item_x, item_y);
+	}
+}
+
+//毒草闪烁
+int poison_shan() {
+	poison_weed *p_temp = ps_head;
+	if (ps_head == NULL) return 1;
+	p_temp = ps_head;
+	while (p_temp) {
+		if (p_temp->x < 0) break;
+		SetColor(rand(), 0);
+		main_printer(POISON_WEED, p_temp->x, p_temp->y);
+		SetColor(7, 0);
+		p_temp = p_temp->next;
+	}
+}
+
+//毒草消失
+//  mode 1 毒草消失   2   毒草清除
+void poison_weed_delete(int h, int mode) {
+	if (ps_head != NULL) {
+		int temp = time(NULL) % 10000;
+		if ((ps_time + 15 <= (time(NULL) % 10000) && mode == 1) || mode == 2) {
+			while (ps_head->x > 0) {
+				gotoxy(ps_head->x, ps_head->y);
+				printf("  ");
+				map_data[h][ps_head->y][ps_head->x] = 0;
+				poison_weed *p_temp = NULL;
+				p_temp = ps_head;
+				ps_head = ps_head->next;
+				free(p_temp);
+			}
+			free(ps_head);
+			ps_head = NULL;
+		}
+	}
+}
+
 
 /*
 h  地图层数
@@ -87,7 +146,6 @@ choose 输出种类
 */
 void make_base_item(int choose, int h) {
 	int item_x, item_y;
-
 	do {
 		item_x = rand() % MAP_WIDTH;
 		item_y = rand() % MAP_LENGTH;
@@ -103,8 +161,10 @@ void make_base_item(int choose, int h) {
 		main_printer(LAND_MINE, item_x, item_y);
 		break;
 	case POISON_WEED:
-		map_data[h][item_y][item_x] = POISON_WEED;
-		main_printer(POISON_WEED, item_x, item_y);
+		if (ps_head == NULL) {
+			poison_weed_made(h, rand() % 15);
+			ps_time = time(NULL) % 10000;
+		}
 		break;
 	case SMART_WEED:
 		map_data[h][item_y][item_x] = SMART_WEED;
@@ -530,6 +590,10 @@ void move(int h) {
 			keep_move(direct, h);
 			auto_make_item(h);
 			if (speed <= 90) speed = 90;
+			//毒草操作  如果能多线程改进最好
+			poison_shan();
+			poison_weed_delete(h, 1);
+
 			Sleep(speed);
 		}
 	}
