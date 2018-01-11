@@ -303,10 +303,13 @@ void delete_tail(int num, int h) {
 int go_on_the_way(int h) {
 	int flag = 0;
 	int *pp = NULL;
+	key_temp[0] = 0;
+	key_temp[1] = 0;
 	flag = search_main(h);
 	path *p_h = NULL;
 	if (flag != -1) {
 		path *p1 = find_ending;
+		p_h = find_ending;
 		while (p1) {
 			int d_s;
 			d_s = move_judger(p1->x, p1->y, h, pp);
@@ -487,7 +490,6 @@ char key_input_detec(int h) {
 	else if (key_temp[2] == 122) {
 		any_door(h);
 	}
-	//P 118
 }
 
 
@@ -501,41 +503,59 @@ snake *init_anydoor() {
 	return any_door_head;
 }
 
+//任意门移动检测
+int ad_move_judjer(int x, int y, int h) {
+	if (x >= 0 && y >= 0) 
+		if (map_data[h][y][x] == 0) return 0;
+	return 1;
+}
+
 //任意门移动工具
 void any_door_move(int dir, snake *d_head, int h) {
+	int *temp = NULL;  //有重载该多好   
 	gotoxy(d_head->x, d_head->y);
 	printf("  ");
-	gotoxy(d_head->x, d_head->y);
-	SetColor(7, 7);
 	switch (dir){
 	case W:
 	case UP:
-		if (move_judger(d_head->x, d_head->y - 1, h) == 1) {
+		if (ad_move_judjer(d_head->x, d_head->y - 1, h) == 0) {
 			d_head->y = d_head->y - 1;
+			int *p_x = &d_head->x;
+			int *p_y = &d_head->y;
+			judge_outu(p_x, p_y);
 			gotoxy(d_head->x, d_head->y);
 			printf("□");
 		}
 		break;
 	case A:
 	case LEFT:
-		if (move_judger(d_head->x - 1, d_head->y, h) == 1) {
+		if (ad_move_judjer(d_head->x - 1, d_head->y, h) == 0) {
 			d_head->x = d_head->x - 1;
+			int *p_x = &d_head->x;
+			int *p_y = &d_head->y;
+			judge_outu(p_x, p_y);
 			gotoxy(d_head->x, d_head->y);
 			printf("□");
 		}
 		break;
 	case S:
 	case DOWN:
-		if (move_judger(d_head->x, d_head->y + 1, h) == 1) {
+		if (ad_move_judjer(d_head->x, d_head->y + 1, h) == 0) {
 			d_head->y = d_head->y + 1;
+			int *p_x = &d_head->x;
+			int *p_y = &d_head->y;
+			judge_outu(p_x, p_y);
 			gotoxy(d_head->x, d_head->y);
 			printf("□");
 		}
 		break;
 	case D:
 	case RIGHT:
-		if (move_judger(d_head->x + 1, d_head->y, h) == 1) {
+		if (ad_move_judjer(d_head->x + 1, d_head->y, h) == 0) {
 			d_head->x = d_head->x + 1;
+			int *p_x = &d_head->x;
+			int *p_y = &d_head->y;
+			judge_outu(p_x, p_y);
 			gotoxy(d_head->x, d_head->y);
 			printf("□");
 		}
@@ -549,6 +569,8 @@ void any_door_move(int dir, snake *d_head, int h) {
 //任意门
 int any_door(int h) {
 	snake *d_head = init_anydoor();   //还需要写一个异常检测，如果按键不是方向键
+	key_temp[0] = 0;
+	key_temp[1] = 0;
 	int kb = LEFT;
 	while (1) {
 		if (_kbhit()) {
