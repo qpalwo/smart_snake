@@ -36,25 +36,25 @@ void init_map(int floor) {
 		for (int j = 0; j < MAP_WIDTH; j++) {
 			switch (map_data[floor][i][j]) {
 			case SNAKE:
-				main_printer(SNAKE, j, i);
+				main_printer(SNAKE, j, i);		
 				break;
 			case 0:
 				gotoxy(j, i);
-				printf("  ");
+				printf("  ");				
 				break;
 			case BASE_FOOD:
-				main_printer(BASE_FOOD, j, i);
+				main_printer(BASE_FOOD, j, i);				
 				break;
 			case WALL:
-				main_printer(WALL, j, i);
+				main_printer(WALL, j, i);				
 				break;
 			case POISON_WEED:
-				main_printer(POISON_WEED, j, i);
+				main_printer(POISON_WEED, j, i);				
 				break;
 			case LAND_MINE:
-				main_printer(LAND_MINE, j, i);
+				main_printer(LAND_MINE, j, i);				
 				break;
-			default:
+			default:				
 				break;
 			}
 		}
@@ -69,6 +69,14 @@ void fresh_score() {
 	gotoxy(MAP_WIDTH + 5, 3);
 	if(user1)
 		printf("当前玩家：%s", user1->name);
+	gotoxy(MAP_WIDTH + 5, 19);
+	printf("上下左右wasd均可操作");
+	gotoxy(MAP_WIDTH + 5, 20);
+	printf("退格键保存");
+	gotoxy(MAP_WIDTH + 5, 21);
+	printf("单击反向键减速");
+	gotoxy(MAP_WIDTH + 5, 22);
+	printf("双击同向键加速");
 	SetColor(7, 0);
 }
 

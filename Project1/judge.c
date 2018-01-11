@@ -329,7 +329,18 @@ int search_main(int h) {
 	add_to_open(p1);
 	while (1) {
 		int search = 0;
-		if (queue_head->next == NULL) return -1;
+		//if (queue_head->next == NULL) return -1;
+		if (queue_head->next == NULL) {
+			node *p_1 = close_list_head->next->node;
+			queue *p1 = close_list_head->next;
+			close_list_head->next = close_list_head->next->next;
+			free(p1);
+			add_to_open(p_1);
+			for (int i = 0; i < MAP_LENGTH; i++)        //³õÊ¼»¯hµØÍ¼
+				for (int j = 0; j < MAP_WIDTH; j++) {
+					f_map[i][j] = -1;
+				}
+		}
 		p1 = queue_head->next->node;
 		if (queue_head->next->next == NULL) return -1;
 		add_to_close(p1);

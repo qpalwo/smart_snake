@@ -19,7 +19,7 @@
 //µÿÕº¥Û–°
 #define MAP_WIDTH 40     //x
 #define MAP_LENGTH 30    //y
-#define MAP_HEIGHT 10  
+#define MAP_HEIGHT 15  
 #define STATEBAR_WIDTH 15
 
 //init snake head location
