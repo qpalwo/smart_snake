@@ -10,9 +10,9 @@ int main() {
 	}*/
 	init_core(0);
 	move(0);
-	//char c = _getch();
-	//printf("%d", c);
+	/*char c = _getch();
+	printf("%d", c);
 
-	//_getch();
+	_getch();*/
 	return 0;
 }

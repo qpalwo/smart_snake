@@ -341,6 +341,7 @@ void init_key_temp() {
 	}
 }
 
+int any_door(int h);
 /*
 键盘输入状态缓存判断
 */
@@ -483,30 +484,91 @@ char key_input_detec(int h) {
 			break;
 		}
 	}
+	else if (key_temp[2] == 122) {
+		any_door(h);
+	}
 	//P 118
 }
 
-//任意门
-int* any_door(int x, int y, int h ) {
-	int kb = _getch();
-	if (kb == 224) kb = _getch();
-	switch (kb){
-	case UP:
+
+//init any_door
+snake *init_anydoor() {
+	snake *any_door_head = (snake*)malloc(sizeof(snake));
+	any_door_head->x = snake_head->x;
+	any_door_head->y = snake_head->y;
+	any_door_head->next = NULL;
+	any_door_head->previous = NULL;
+	return any_door_head;
+}
+
+//任意门移动工具
+void any_door_move(int dir, snake *d_head, int h) {
+	gotoxy(d_head->x, d_head->y);
+	printf("  ");
+	gotoxy(d_head->x, d_head->y);
+	SetColor(7, 7);
+	switch (dir){
 	case W:
-		
+	case UP:
+		if (move_judger(d_head->x, d_head->y - 1, h) == 1) {
+			d_head->y = d_head->y - 1;
+			gotoxy(d_head->x, d_head->y);
+			printf("□");
+		}
 		break;
-	case DOWN:
-	case S:
-		break;
-	case LEFT:
 	case A:
+	case LEFT:
+		if (move_judger(d_head->x - 1, d_head->y, h) == 1) {
+			d_head->x = d_head->x - 1;
+			gotoxy(d_head->x, d_head->y);
+			printf("□");
+		}
 		break;
-	case RIGHT:
+	case S:
+	case DOWN:
+		if (move_judger(d_head->x, d_head->y + 1, h) == 1) {
+			d_head->y = d_head->y + 1;
+			gotoxy(d_head->x, d_head->y);
+			printf("□");
+		}
+		break;
 	case D:
+	case RIGHT:
+		if (move_judger(d_head->x + 1, d_head->y, h) == 1) {
+			d_head->x = d_head->x + 1;
+			gotoxy(d_head->x, d_head->y);
+			printf("□");
+		}
 		break;
 	default:
 		break;
 	}
+	SetColor(7, 0);
+}
+
+//任意门
+int any_door(int h) {
+	snake *d_head = init_anydoor();   //还需要写一个异常检测，如果按键不是方向键
+	int kb = LEFT;
+	while (1) {
+		if (_kbhit()) {
+			kb = _getch();
+			if (kb == 13) {   //如果敲到回车
+				snake_head->x = d_head->x;
+				snake_head->y = d_head->y;
+				return 0;
+			}
+			if (kb == 224) kb = _getch();
+			any_door_move(kb, d_head, h);
+		}
+		else {
+			gotoxy(d_head->x, d_head->y);
+			SetColor(rand(), rand());
+			printf("□");
+			SetColor(7, 0);
+		}
+	}
+	return 1;
 }
 
 
